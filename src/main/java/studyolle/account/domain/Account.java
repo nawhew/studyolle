@@ -5,7 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity @Getter @Setter @EqualsAndHashCode(of = "id") @ToString(exclude = "password")
+@Entity
+@Getter @Setter @EqualsAndHashCode(of = "id") @ToString(exclude = "password")
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Account {
 
