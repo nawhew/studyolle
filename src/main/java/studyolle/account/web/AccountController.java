@@ -33,7 +33,7 @@ public class AccountController {
         }
 
         Account account = this.accountService.signUp(signUpForm);
-
+        this.accountService.sendSignUpCheckEmail(account);
         return "redirect:/";
     }
 }
