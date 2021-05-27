@@ -1,6 +1,5 @@
 package studyolle.account.web;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -32,7 +31,7 @@ public class AccountController {
             return "account/sign-up";
         }
 
-        Account account = this.accountService.signUp(signUpForm);
+        Account account = this.accountService.save(signUpForm);
         this.accountService.sendSignUpCheckEmail(account);
         return "redirect:/";
     }

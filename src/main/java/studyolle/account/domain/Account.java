@@ -39,6 +39,10 @@ public class Account {
     private boolean studyUpdatedByEmail;
     private boolean studyUpdatedByWeb;
 
+    /**
+     * 회원가입 체크 메일 토큰 생성
+     * @return 
+     */
     public String generateEmailCheckToken() {
         return UUID.randomUUID().toString();
     }

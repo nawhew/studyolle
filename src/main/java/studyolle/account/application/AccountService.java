@@ -19,10 +19,19 @@ public class AccountService {
         this.javaMailSender = javaMailSender;
     }
 
-    public Account signUp(SignUpForm signUpForm) {
+    /**
+     * 유저 정보 저장
+     * @param signUpForm 
+     * @return
+     */
+    public Account save(SignUpForm signUpForm) {
         return this.accountRepository.save(signUpForm.toAccount());
     }
 
+    /**
+     * 회원가입 인증 메일 전송
+     * @param account 
+     */
     public void sendSignUpCheckEmail(Account account) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(account.getEmail());
