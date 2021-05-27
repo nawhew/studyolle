@@ -2,6 +2,7 @@ package studyolle.account.application;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
@@ -14,9 +15,13 @@ public class AccountService {
 
     private final JavaMailSender javaMailSender;
 
-    public AccountService(AccountRepository accountRepository, JavaMailSender javaMailSender) {
+    private final PasswordEncoder passwordEncoder;
+
+    public AccountService(AccountRepository accountRepository, JavaMailSender javaMailSender
+            , PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.javaMailSender = javaMailSender;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -25,7 +30,7 @@ public class AccountService {
      * @return
      */
     public Account save(SignUpForm signUpForm) {
-        return this.accountRepository.save(signUpForm.toAccount());
+        return this.accountRepository.save(signUpForm.toAccount().encodePassword(this.passwordEncoder));
     }
 
     /**

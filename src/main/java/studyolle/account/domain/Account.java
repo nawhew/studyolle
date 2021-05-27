@@ -1,6 +1,7 @@
 package studyolle.account.domain;
 
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -45,5 +46,14 @@ public class Account {
      */
     public String generateEmailCheckToken() {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * 비밀번호를 인코딩합니다.
+     * @param passwordEncoder
+     */
+    public Account encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
+        return this;
     }
 }

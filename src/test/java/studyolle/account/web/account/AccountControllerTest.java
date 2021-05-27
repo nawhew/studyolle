@@ -11,7 +11,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
+import studyolle.account.domain.Account;
+import studyolle.account.domain.AccountRepository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -29,6 +32,9 @@ class AccountControllerTest {
     @MockBean
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     @Test
     @DisplayName("회원가입 화면 요청 테스트")
     void signUpForm() throws Exception {
@@ -42,23 +48,31 @@ class AccountControllerTest {
     @Test
     @DisplayName("회원가입 테스트")
     void signUp() throws Exception {
+        // given
+        String email = "test@stutyolle.com";
+
         // when - then
         this.mockMvc.perform(post("/sign-up")
-                            .param("email", "test@stutyolle.com")
+                            .param("email", email)
                             .param("nickname", "test")
                             .param("password", "test1234")
                             .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        // when - then
+        // then
         this.회원가입_인증_메일_전송_확인();
+        this.회원가입_비밀번호_인코딩_확인(email);
     }
 
     private void 회원가입_인증_메일_전송_확인() {
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
+    private void 회원가입_비밀번호_인코딩_확인(String email) {
+        Account newAccount = this.accountRepository.findByEmail(email).get();
+        assertThat(newAccount.getPassword()).isNotEqualTo(email);
+    }
 
     @ParameterizedTest
     @CsvSource(value = {" ,test,test1234" // blank email
