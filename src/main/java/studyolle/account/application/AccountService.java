@@ -55,7 +55,7 @@ public class AccountService {
         Optional<Account> account = this.accountRepository.findByEmail(email);
         Account checkedAccount = null;
         if(account.isPresent()
-                && (checkedAccount = account.get()).getEmailCheckToken().equals(token)) {
+                && (checkedAccount = account.get()).isValidEmailCheckToken(token)) {
             checkedAccount.completeSignUp();
             return checkedAccount;
         }
