@@ -58,4 +58,9 @@ public class Account {
         this.password = passwordEncoder.encode(this.password);
         return this;
     }
+
+    public void completeSignUp() {
+        this.emailVerified = true;
+        this.joinedAt = LocalDateTime.now();
+    }
 }

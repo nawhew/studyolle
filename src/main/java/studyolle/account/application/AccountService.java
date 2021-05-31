@@ -56,8 +56,7 @@ public class AccountService {
         Account checkedAccount = null;
         if(account.isPresent()
                 && (checkedAccount = account.get()).getEmailCheckToken().equals(token)) {
-            checkedAccount.setEmailVerified(true);
-            checkedAccount.setJoinedAt(LocalDateTime.now());
+            checkedAccount.completeSignUp();
             return checkedAccount;
         }
         return null;
