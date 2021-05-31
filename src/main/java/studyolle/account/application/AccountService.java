@@ -4,11 +4,16 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.dto.SignUpForm;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
+@Transactional
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -44,5 +49,17 @@ public class AccountService {
         mailMessage.setText("/check-email-token?token=" + account.generateEmailCheckToken()
                                     + "&email=" + account.getEmail());
         this.javaMailSender.send(mailMessage);
+    }
+
+    public Account checkEmailToken(String token, String email) {
+        Optional<Account> account = this.accountRepository.findByEmail(email);
+        Account checkedAccount = null;
+        if(account.isPresent()
+                && (checkedAccount = account.get()).getEmailCheckToken().equals(token)) {
+            checkedAccount.setEmailVerified(true);
+            checkedAccount.setJoinedAt(LocalDateTime.now());
+            return checkedAccount;
+        }
+        return null;
     }
 }

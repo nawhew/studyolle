@@ -45,7 +45,9 @@ public class Account {
      * @return 
      */
     public String generateEmailCheckToken() {
-        return UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
+        this.emailCheckToken = token;
+        return token;
     }
 
     /**

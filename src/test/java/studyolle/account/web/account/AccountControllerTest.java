@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -52,6 +54,14 @@ class AccountControllerTest {
         String email = "test@stutyolle.com";
 
         // when - then
+        회원가입_요청(email);
+
+        // then
+        this.회원가입_인증_메일_전송_확인();
+        this.회원가입_비밀번호_인코딩_확인(email);
+    }
+
+    private void 회원가입_요청(String email) throws Exception {
         this.mockMvc.perform(post("/sign-up")
                             .param("email", email)
                             .param("nickname", "test")
@@ -59,10 +69,6 @@ class AccountControllerTest {
                             .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
-
-        // then
-        this.회원가입_인증_메일_전송_확인();
-        this.회원가입_비밀번호_인코딩_확인(email);
     }
 
     private void 회원가입_인증_메일_전송_확인() {
@@ -89,5 +95,45 @@ class AccountControllerTest {
                 .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"));
+    }
+
+    @Test
+    @DisplayName("회원가입 이메일 토큰 체크")
+    void checkEmailToken() throws Exception {
+        // given
+        String email = "test@email.com";
+        회원가입_요청(email);
+        Account account = this.accountRepository.findByEmail(email).get();
+        String token = account.getEmailCheckToken();
+        String nickname = account.getNickname();
+
+        // when - then
+        this.mockMvc.perform(get("/check-email-token")
+                            .param("email", email)
+                            .param("token", token)
+                            .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(model().attribute("nickname", nickname));
+    }
+
+
+    @Test
+    @DisplayName("회원가입 이메일 비정상 토큰")
+    void checkEmailToken_wrong_token() throws Exception {
+        // given
+        String email = "wrong-token@email.com";
+        회원가입_요청(email);
+        Account account = this.accountRepository.findByEmail(email).get();
+        String wrongToken = account.getEmailCheckToken() + "abc";
+
+        // when - then
+        this.mockMvc.perform(get("/check-email-token")
+                            .param("email", email)
+                            .param("token", wrongToken)
+                            .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(model().attributeExists("error"));
     }
 }

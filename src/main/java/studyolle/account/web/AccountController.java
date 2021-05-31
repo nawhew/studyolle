@@ -35,4 +35,16 @@ public class AccountController {
         this.accountService.sendSignUpCheckEmail(account);
         return "redirect:/";
     }
+
+    @GetMapping("/check-email-token")
+    public String checkEmailToken(@RequestParam String token, @RequestParam String email, Model model) {
+        Account account = this.accountService.checkEmailToken(token, email);
+        String view = "account/checked-email";
+        if(account != null) {
+            model.addAttribute("nickname", account.getNickname());
+            return view;
+        }
+        model.addAttribute("error", "fail.checked.email-token");
+        return view;
+    }
 }
