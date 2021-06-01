@@ -14,12 +14,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,23 +52,25 @@ class AccountControllerTest {
     void signUp() throws Exception {
         // given
         String email = "test@stutyolle.com";
+        String nickname = "test";
 
         // when - then
-        회원가입_요청(email);
+        회원가입_요청(email, nickname);
 
         // then
         this.회원가입_인증_메일_전송_확인();
         this.회원가입_비밀번호_인코딩_확인(email);
     }
 
-    private void 회원가입_요청(String email) throws Exception {
+    private void 회원가입_요청(String email, String nickname) throws Exception {
         this.mockMvc.perform(post("/sign-up")
                             .param("email", email)
-                            .param("nickname", "test")
+                            .param("nickname", nickname)
                             .param("password", "test1234")
                             .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(view().name("redirect:/"))
+                .andExpect(authenticated().withUsername(nickname));
     }
 
     private void 회원가입_인증_메일_전송_확인() {
@@ -94,7 +96,8 @@ class AccountControllerTest {
                 .param("password", password)
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"));
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated());
     }
 
     @Test
@@ -102,10 +105,9 @@ class AccountControllerTest {
     void checkEmailToken() throws Exception {
         // given
         String email = "test@email.com";
-        회원가입_요청(email);
-        Account account = this.accountRepository.findByEmail(email).get();
-        String token = account.getEmailCheckToken();
-        String nickname = account.getNickname();
+        String nickname = "test-token";
+        회원가입_요청(email, nickname);
+        String token = this.accountRepository.findByEmail(email).get().getEmailCheckToken();
 
         // when - then
         this.mockMvc.perform(get("/check-email-token")
@@ -114,7 +116,8 @@ class AccountControllerTest {
                             .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/checked-email"))
-                .andExpect(model().attribute("nickname", nickname));
+                .andExpect(model().attribute("nickname", nickname))
+                .andExpect(authenticated().withUsername(nickname));
     }
 
 
@@ -123,7 +126,8 @@ class AccountControllerTest {
     void checkEmailToken_wrong_token() throws Exception {
         // given
         String email = "wrong-token@email.com";
-        회원가입_요청(email);
+        String nickname = "test-wrong-token";
+        회원가입_요청(email, nickname);
         Account account = this.accountRepository.findByEmail(email).get();
         String wrongToken = account.getEmailCheckToken() + "abc";
 
@@ -134,6 +138,7 @@ class AccountControllerTest {
                             .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/checked-email"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(model().attributeExists("error"))
+                .andExpect(unauthenticated());
     }
 }

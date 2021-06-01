@@ -33,6 +33,7 @@ public class AccountController {
 
         Account account = this.accountService.save(signUpForm);
         this.accountService.sendSignUpCheckEmail(account);
+        this.accountService.login(account);
         return "redirect:/";
     }
 
@@ -42,6 +43,7 @@ public class AccountController {
         String view = "account/checked-email";
         if(account != null) {
             model.addAttribute("nickname", account.getNickname());
+            this.accountService.login(account);
             return view;
         }
         model.addAttribute("error", "fail.checked.email-token");

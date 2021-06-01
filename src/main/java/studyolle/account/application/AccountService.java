@@ -2,6 +2,9 @@ package studyolle.account.application;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +13,7 @@ import studyolle.account.domain.AccountRepository;
 import studyolle.account.dto.SignUpForm;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,6 +55,12 @@ public class AccountService {
         this.javaMailSender.send(mailMessage);
     }
 
+    /**
+     * 생성 된 토큰을 이메일로 받아서 인증
+     * @param token 
+     * @param email
+     * @return
+     */
     public Account checkEmailToken(String token, String email) {
         Optional<Account> account = this.accountRepository.findByEmail(email);
         Account checkedAccount = null;
@@ -60,5 +70,17 @@ public class AccountService {
             return checkedAccount;
         }
         return null;
+    }
+
+    /**
+     * 자동 로그인을 위한 Account를 받아서 시큐리티 컨텍스트 홀더에 인증 토큰 추가
+     * @param account 
+     */
+    public void login(Account account) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                account.getNickname(),
+                account.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        SecurityContextHolder.getContext().setAuthentication(token);
     }
 }
