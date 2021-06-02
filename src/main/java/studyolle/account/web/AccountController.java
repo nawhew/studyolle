@@ -3,9 +3,13 @@ package studyolle.account.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
+import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.account.dto.SignUpForm;
 
 import javax.validation.Valid;
@@ -48,5 +52,14 @@ public class AccountController {
         }
         model.addAttribute("error", "fail.checked.email-token");
         return view;
+    }
+
+    @GetMapping("/check-email")
+    public String checkEmail(@CurrentUserAccount Account account) {
+        if(account != null) {
+            this.accountService.sendSignUpCheckEmail(account);
+        }
+
+        return "redirect:/";
     }
 }

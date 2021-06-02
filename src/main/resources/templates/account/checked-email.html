@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments.html :: head"></head>
 <body class="bg-light">
-<nav th:replace="fragments.html :: main-nav"></nav>
+    <div class="fragments.html :: main-nav"></div>
 
     <div class="py-5 text-center" th:if="${error}">
         <p class="lead">스터디올래 이메일 확인</p>
@@ -14,12 +14,11 @@
     <div class="py-5 text-center" th:if="${error == null}">
         <p class="lead">스터디올래 이메일 확인</p>
         <h2>
-           이메일을 확인했습니다.
-            <span th:text="${nickname}">신규회원</span>님 가입을 축하합니다.
+           이메일을 확인했습니다. <span th:text="${nickname}">위환</span>님 가입을 축하합니다.
         </h2>
         <small class="text-info">이제부터 가입할 때 사용한 이메일 또는 닉네임과 패스트워드로 로그인 할 수 있습니다.</small>
     </div>
 
-    <footer th:replace="fragments.html :: footer"></footer>
+    <div class="fragments.html :: footer"></div>
 </body>
 </html>

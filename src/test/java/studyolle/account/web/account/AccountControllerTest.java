@@ -141,4 +141,21 @@ class AccountControllerTest {
                 .andExpect(model().attributeExists("error"))
                 .andExpect(unauthenticated());
     }
+
+
+    @Test
+    @DisplayName("회원가입 이메일 재전송")
+    void checkEmail() throws Exception {
+        // given
+        String email = "re-send@email.com";
+        String nickname = "re-send";
+        회원가입_요청(email, nickname);
+        String token = this.accountRepository.findByEmail(email).get().getEmailCheckToken();
+
+        // when - then
+        this.mockMvc.perform(get("/check-email")
+                            .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
+    }
 }

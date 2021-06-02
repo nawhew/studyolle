@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
+import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,7 @@ public class AccountService {
         mailMessage.setSubject("스터디올레 - 회원 가입 인증");
         mailMessage.setText("/check-email-token?token=" + account.generateEmailCheckToken()
                                     + "&email=" + account.getEmail());
+        this.accountRepository.save(account);
         this.javaMailSender.send(mailMessage);
     }
 
@@ -78,7 +80,7 @@ public class AccountService {
      */
     public void login(Account account) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                account.getNickname(),
+                new UserAccount(account),
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
