@@ -55,11 +55,22 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmail(@CurrentUserAccount Account account) {
-        if(account != null) {
-            this.accountService.sendSignUpCheckEmail(account);
+    public String checkEmail(@CurrentUserAccount Account account, Model model) {
+        model.addAttribute("email", account.getEmail());
+        return "account/check-email";
+    }
+
+
+    @GetMapping("/resend-confirm-email")
+    public String resendConfirmEmail(@CurrentUserAccount Account account, Model model) {
+        if(!account.canSendCheckEmail()) {
+            model.addAttribute("error", "인증 이메일은 1시간에 한번만 전송할 수 있습니다.");
+            model.addAttribute("email", account.getEmail());
+            model.addAttribute("lastSendEmailTime", account.getEmailCheckTokenGeneratedAt());
+            return "account/check-email";
         }
 
+        this.accountService.sendSignUpCheckEmail(account);
         return "redirect:/";
     }
 }
