@@ -5,6 +5,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +16,13 @@ import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
-public class AccountService {
+public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
 
@@ -84,5 +87,31 @@ public class AccountService {
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
+        Account account = this.findAccountByEmailOrNickname(emailOrNickname);
+        if(account == null) {
+            throw new UsernameNotFoundException("not found account : " + emailOrNickname);
+        }
+        return new UserAccount(account);
+    }
+
+    /**
+     * 파라미터로 받은 값의 email 혹은 nickname을 가진 계정이 있는지 확인
+     * @param emailOrNickname
+     * @return
+     */
+    private Account findAccountByEmailOrNickname(String emailOrNickname) {
+        Account account = null;
+        if(this.accountRepository.findByEmail(emailOrNickname).isPresent()) {
+            return this.accountRepository.findByEmail(emailOrNickname).get();
+        }
+
+        if(this.accountRepository.findByNickname(emailOrNickname).isPresent()) {
+            account = this.accountRepository.findByNickname(emailOrNickname).get();
+        }
+        return account;
     }
 }
