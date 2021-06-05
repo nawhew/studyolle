@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -157,5 +159,23 @@ class AccountControllerTest {
                             .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
+    }
+
+
+    @Test
+    @DisplayName("계정 프로필 화면")
+    void profile() throws Exception {
+        // given
+        String email = "re-send@email.com";
+        String nickname = "re-send";
+        회원가입_요청(email, nickname);
+
+        // when - then
+        this.mockMvc.perform(get("/profile/" + nickname)
+                            .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/profile"))
+                .andExpect(model().attributeExists("isOwner"))
+                .andExpect(model().attributeExists("account"));
     }
 }

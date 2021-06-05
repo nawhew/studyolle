@@ -114,4 +114,12 @@ public class AccountService implements UserDetailsService {
         }
         return account;
     }
+
+    public Account findByNickname(String nickname) {
+        Optional<Account> byNickname = this.accountRepository.findByNickname(nickname);
+        if(byNickname.isEmpty()) {
+            throw new IllegalArgumentException(nickname + "의 이름을 가진 유저가 없습니다.");
+        }
+        return byNickname.get();
+    }
 }

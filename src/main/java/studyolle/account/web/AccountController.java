@@ -3,10 +3,7 @@ package studyolle.account.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
@@ -72,5 +69,14 @@ public class AccountController {
 
         this.accountService.sendSignUpCheckEmail(account);
         return "redirect:/";
+    }
+
+    @GetMapping("/profile/{nickname}")
+    public String profile(@PathVariable String nickname, Model model, @CurrentUserAccount Account account) {
+        Account accountByNickname = this.accountService.findByNickname(nickname);
+
+        model.addAttribute("account", accountByNickname);
+        model.addAttribute("isOwner", accountByNickname.equals(account));
+        return "account/profile";
     }
 }
