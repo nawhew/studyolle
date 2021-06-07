@@ -126,4 +126,8 @@ public class AccountService implements UserDetailsService {
     public Account updateProfile(Account account, Profile profile) {
         return this.accountRepository.save(account.updateProfile(profile));
     }
+
+    public void updatePassword(Account account, String password) {
+        this.accountRepository.save(account.updateEncodedPassword(this.passwordEncoder, password));
+    }
 }

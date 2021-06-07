@@ -3,11 +3,13 @@ package studyolle.account.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.account.dto.SignUpForm;
+import studyolle.account.dto.SignUpFormValidator;
 
 import javax.validation.Valid;
 
@@ -15,9 +17,16 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final AccountService accountService;
+    private final SignUpFormValidator signUpFormValidator;
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, SignUpFormValidator signUpFormValidator) {
         this.accountService = accountService;
+        this.signUpFormValidator = signUpFormValidator;
+    }
+
+    @InitBinder("signUpForm")
+    public void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(this.signUpFormValidator);
     }
 
     @GetMapping("/sign-up")

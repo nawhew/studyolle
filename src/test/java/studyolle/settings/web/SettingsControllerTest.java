@@ -27,6 +27,26 @@ class SettingsControllerTest {
     private AccountService accountService;
 
     @Test
+    @WithAccount("nawhew")
+    @DisplayName("프로필 수정 성공")
+    void updateProfile() throws Exception {
+        // given
+        String bio = "소개 수정을 성공합니다.";
+
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_PROFILE)
+                .param("bio", bio)
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_PROFILE))
+                .andExpect(flash().attributeExists("message"));
+
+        // then
+        Account account = this.accountService.findByNickname("nawhew");
+        assertThat(account.getBio()).isEqualTo(bio);
+    }
+
+    @Test
     @WithAccount("long-bio")
     @DisplayName("소개가 긴 경우 프로필 수정 실패")
     void updateProfile_fail_to_longBio() throws Exception {
@@ -45,22 +65,39 @@ class SettingsControllerTest {
     }
 
     @Test
-    @WithAccount("nawhew")
-    @DisplayName("프로필 수정 성공")
-    void updateProfile() throws Exception {
+    @WithAccount("new-password")
+    @DisplayName("비밀번호 수정 성공")
+    void updatePassword() throws Exception {
         // given
-        String bio = "소개 수정을 성공합니다.";
+        String newPassword = "password2";
 
         // when - then
-        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_PROFILE)
-                            .param("bio", bio)
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_PASSWORD)
+                            .param("newPassword", newPassword)
+                            .param("newPasswordConfirm", newPassword)
                             .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_PROFILE))
+                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_PASSWORD))
                 .andExpect(flash().attributeExists("message"));
 
         // then
-        Account account = this.accountService.findByNickname("nawhew");
-        assertThat(account.getBio()).isEqualTo(bio);
+        Account account = this.accountService.findByNickname("new-password");
+        assertThat(account.getPassword()).contains("{bcrypt}");
+    }
+
+    @Test
+    @WithAccount("diff-password")
+    @DisplayName("확인 비밀번호가 다른 경우 비밀번호 수정 실패")
+    void updatePassword_fail_to_different_confirm() throws Exception {
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_PASSWORD)
+                            .param("newPassword", "12341234")
+                            .param("newPasswordConfirm", "12345678")
+                            .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.VIEW_SETTINGS_PASSWORD))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().hasErrors());
     }
 }

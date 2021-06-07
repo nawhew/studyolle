@@ -62,6 +62,11 @@ public class Account {
         return this;
     }
 
+    public Account updateEncodedPassword(PasswordEncoder passwordEncoder, String password) {
+        this.password = passwordEncoder.encode(password);
+        return this;
+    }
+
     public void completeSignUp() {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
