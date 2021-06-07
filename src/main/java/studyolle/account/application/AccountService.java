@@ -15,6 +15,7 @@ import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
+import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
 
 import java.util.List;
@@ -129,5 +130,9 @@ public class AccountService implements UserDetailsService {
 
     public void updatePassword(Account account, String password) {
         this.accountRepository.save(account.updateEncodedPassword(this.passwordEncoder, password));
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        this.accountRepository.save(account.updateNotifications(notifications));
     }
 }

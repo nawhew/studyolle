@@ -2,6 +2,7 @@ package studyolle.account.domain;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
 
 import javax.persistence.*;
@@ -86,6 +87,16 @@ public class Account {
         this.occupation = profile.getOccupation();
         this.location = profile.getLocation();
         this.profileImage = profile.getProfileImage();
+        return this;
+    }
+
+    public Account updateNotifications(Notifications notifications) {
+        this.studyCreatedByWeb = notifications.isStudyCreatedByWeb();
+        this.studyCreatedByEmail = notifications.isStudyCreatedByEmail();
+        this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
+        this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
+        this.studyEnrollmentResultByEmail = notifications.isStudyEnrollmentResultByEmail();
+        this.studyEnrollmentResultByWeb = notifications.isStudyEnrollmentResultByWeb();
         return this;
     }
 }

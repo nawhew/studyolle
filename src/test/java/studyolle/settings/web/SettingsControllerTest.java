@@ -11,6 +11,8 @@ import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -99,5 +101,34 @@ class SettingsControllerTest {
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attributeExists("passwordForm"))
                 .andExpect(model().hasErrors());
+    }
+
+
+    @Test
+    @WithAccount("noti")
+    @DisplayName("알림설정 변경 성공")
+    void updateNotifications() throws Exception {
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_NOTIFICATIONS)
+                            .param("studyCreatedByEmail", "true")
+                            .param("studyCreatedByWeb", "true")
+                            .param("studyEnrollmentResultByEmail", "true")
+                            .param("studyEnrollmentResultByWeb", "true")
+                            .param("studyUpdatedByEmail", "false")
+                            .param("studyUpdatedByWeb", "false")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_NOTIFICATIONS))
+                .andExpect(flash().attributeExists("message"));
+
+        // then
+        Account account = this.accountService.findByNickname("noti");
+        assertTrue(account.isStudyCreatedByEmail());
+        assertTrue(account.isStudyCreatedByWeb());
+        assertTrue(account.isStudyEnrollmentResultByEmail());
+        assertTrue(account.isStudyEnrollmentResultByWeb());
+        assertFalse(account.isStudyUpdatedByEmail());
+        assertFalse(account.isStudyUpdatedByWeb());
+
     }
 }

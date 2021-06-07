@@ -7,11 +7,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
+import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.PasswordForm;
 import studyolle.settings.dto.PasswordFormValidator;
 import studyolle.settings.dto.Profile;
@@ -25,6 +25,8 @@ public class SettingsController {
     protected static final String URL_SETTINGS_PROFILE = "/settings/profile";
     protected static final String VIEW_SETTINGS_PASSWORD = "settings/password";
     protected static final String URL_SETTINGS_PASSWORD = "/settings/password";
+    protected static final String VIEW_SETTINGS_NOTIFICATIONS = "settings/notification";
+    protected static final String URL_SETTINGS_NOTIFICATIONS = "/settings/notification";
 
     private final AccountService accountService;
 
@@ -77,5 +79,26 @@ public class SettingsController {
         this.accountService.updatePassword(account, passwordForm.getNewPassword());
         attributes.addFlashAttribute("message", "패스워드를 변경했습니다.");
         return "redirect:" + URL_SETTINGS_PASSWORD;
+    }
+
+    @GetMapping(URL_SETTINGS_NOTIFICATIONS)
+    public String notificationsSettingForm(@CurrentUserAccount Account account, Model model) {
+        model.addAttribute("account", account);
+        model.addAttribute("notifications", Notifications.of(account));
+        return VIEW_SETTINGS_NOTIFICATIONS;
+    }
+
+    @PostMapping(URL_SETTINGS_NOTIFICATIONS)
+    public String updateNotifications(@CurrentUserAccount Account account, @Valid Notifications notifications
+            , Errors errors, Model model, RedirectAttributes attributes) {
+
+        if(errors.hasErrors()) {
+            model.addAttribute("account", account);
+            return VIEW_SETTINGS_NOTIFICATIONS;
+        }
+
+        this.accountService.updateNotifications(account, notifications);
+        attributes.addFlashAttribute("message", "알림설정을 변경했습니다.");
+        return "redirect:" + URL_SETTINGS_NOTIFICATIONS;
     }
 }
