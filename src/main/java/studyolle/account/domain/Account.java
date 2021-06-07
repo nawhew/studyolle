@@ -80,6 +80,7 @@ public class Account {
         this.url = profile.getUrl();
         this.occupation = profile.getOccupation();
         this.location = profile.getLocation();
+        this.profileImage = profile.getProfileImage();
         return this;
     }
 }

@@ -23,12 +23,15 @@ public class Profile {
     @Length(max = 50)
     private String location;
 
+    private String profileImage;
+
     public static Profile of(Account account) {
         return Profile.builder()
                 .bio(account.getBio())
                 .url(account.getUrl())
                 .occupation(account.getOccupation())
                 .location(account.getLocation())
+                .profileImage(account.getProfileImage())
                 .build();
     }
 }
