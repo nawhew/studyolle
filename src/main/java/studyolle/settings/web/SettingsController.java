@@ -16,8 +16,8 @@ import javax.validation.Valid;
 @Controller
 public class SettingsController {
 
-    private static final String VIEW_SETTINGS_PROFILE = "settings/profile";
-    private static final String URL_SETTINGS_PROFILE = "/settings/profile";
+    protected static final String VIEW_SETTINGS_PROFILE = "settings/profile";
+    protected static final String URL_SETTINGS_PROFILE = "/settings/profile";
 
     private final AccountService accountService;
 
