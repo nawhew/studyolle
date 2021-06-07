@@ -1,10 +1,13 @@
 package studyolle.settings.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import studyolle.account.domain.Account;
 
-@Data @Builder
+@Data
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Profile {
     private String bio;
     private String url;

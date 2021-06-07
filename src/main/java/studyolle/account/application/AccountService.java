@@ -15,10 +15,10 @@ import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
+import studyolle.settings.dto.Profile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
@@ -121,5 +121,9 @@ public class AccountService implements UserDetailsService {
             throw new IllegalArgumentException(nickname + "의 이름을 가진 유저가 없습니다.");
         }
         return byNickname.get();
+    }
+
+    public Account updateProfile(Account account, Profile profile) {
+        return this.accountRepository.save(account.updateProfile(profile));
     }
 }

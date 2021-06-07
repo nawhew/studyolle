@@ -2,6 +2,7 @@ package studyolle.account.domain;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import studyolle.settings.dto.Profile;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -72,5 +73,13 @@ public class Account {
 
     public boolean canSendCheckEmail() {
         return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public Account updateProfile(Profile profile) {
+        this.bio = profile.getBio();
+        this.url = profile.getUrl();
+        this.occupation = profile.getOccupation();
+        this.location = profile.getLocation();
+        return this;
     }
 }
