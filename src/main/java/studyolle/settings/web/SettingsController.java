@@ -32,7 +32,7 @@ public class SettingsController {
         return VIEW_SETTINGS_PROFILE;
     }
 
-    @PostMapping("/settings/profile")
+    @PostMapping(URL_SETTINGS_PROFILE)
     public String updateProfile(@CurrentUserAccount Account account, @Valid Profile profile
             , Errors errors, Model model, RedirectAttributes attributes) {
 
