@@ -99,4 +99,9 @@ public class Account {
         this.studyEnrollmentResultByWeb = notifications.isStudyEnrollmentResultByWeb();
         return this;
     }
+
+    public Account updateNickname(String nickname) {
+        this.nickname = nickname;
+        return this;
+    }
 }

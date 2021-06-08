@@ -15,6 +15,7 @@ import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
+import studyolle.settings.dto.NicknameForm;
 import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
 
@@ -134,5 +135,10 @@ public class AccountService implements UserDetailsService {
 
     public void updateNotifications(Account account, Notifications notifications) {
         this.accountRepository.save(account.updateNotifications(notifications));
+    }
+
+    public void updateNickname(Account account, NicknameForm nicknameForm) {
+        Account updateNicknameAccount = this.accountRepository.save(account.updateNickname(nicknameForm.getNickname()));
+        this.login(updateNicknameAccount);
     }
 }

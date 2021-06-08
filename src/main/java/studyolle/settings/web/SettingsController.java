@@ -1,5 +1,6 @@
 package studyolle.settings.web;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -11,32 +12,34 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
-import studyolle.settings.dto.Notifications;
-import studyolle.settings.dto.PasswordForm;
-import studyolle.settings.dto.PasswordFormValidator;
-import studyolle.settings.dto.Profile;
+import studyolle.settings.dto.*;
 
 import javax.validation.Valid;
 
 @Controller
+@RequiredArgsConstructor
 public class SettingsController {
 
     protected static final String VIEW_SETTINGS_PROFILE = "settings/profile";
-    protected static final String URL_SETTINGS_PROFILE = "/settings/profile";
+    protected static final String URL_SETTINGS_PROFILE = "/" + VIEW_SETTINGS_PROFILE;
     protected static final String VIEW_SETTINGS_PASSWORD = "settings/password";
-    protected static final String URL_SETTINGS_PASSWORD = "/settings/password";
+    protected static final String URL_SETTINGS_PASSWORD = "/" + VIEW_SETTINGS_PASSWORD;
     protected static final String VIEW_SETTINGS_NOTIFICATIONS = "settings/notifications";
-    protected static final String URL_SETTINGS_NOTIFICATIONS = "/settings/notifications";
+    protected static final String URL_SETTINGS_NOTIFICATIONS = "/" + VIEW_SETTINGS_NOTIFICATIONS;
+    protected static final String VIEW_SETTINGS_ACCOUNT = "settings/account";
+    protected static final String URL_SETTINGS_ACCOUNT = "/" + VIEW_SETTINGS_ACCOUNT;
 
     private final AccountService accountService;
-
-    public SettingsController(AccountService accountService) {
-        this.accountService = accountService;
-    }
+    private final NicknameFormValidator nicknameFormValidator;
 
     @InitBinder("passwordForm")
-    public void initBinder(WebDataBinder webDataBinder) {
+    public void initBinderByPasswordForm(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new PasswordFormValidator());
+    }
+
+    @InitBinder("nicknameForm")
+    public void initBinderByNicknameForm(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(nicknameFormValidator);
     }
 
     @GetMapping(URL_SETTINGS_PROFILE)
@@ -100,5 +103,27 @@ public class SettingsController {
         this.accountService.updateNotifications(account, notifications);
         attributes.addFlashAttribute("message", "알림설정을 변경했습니다.");
         return "redirect:" + URL_SETTINGS_NOTIFICATIONS;
+    }
+
+
+    @GetMapping(URL_SETTINGS_ACCOUNT)
+    public String accountSettingForm(@CurrentUserAccount Account account, Model model) {
+        model.addAttribute("account", account);
+        model.addAttribute("nicknameForm", NicknameForm.of(account));
+        return VIEW_SETTINGS_ACCOUNT;
+    }
+
+    @PostMapping(URL_SETTINGS_ACCOUNT)
+    public String updateAccount(@CurrentUserAccount Account account, @Valid NicknameForm nicknameForm
+            , Errors errors, Model model, RedirectAttributes attributes) {
+
+        if(errors.hasErrors()) {
+            model.addAttribute("account", account);
+            return VIEW_SETTINGS_ACCOUNT;
+        }
+
+        this.accountService.updateNickname(account, nicknameForm);
+        attributes.addFlashAttribute("message", "닉네임설정을 변경했습니다.");
+        return "redirect:" + URL_SETTINGS_ACCOUNT;
     }
 }
