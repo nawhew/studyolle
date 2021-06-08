@@ -25,8 +25,8 @@ public class SettingsController {
     protected static final String URL_SETTINGS_PROFILE = "/settings/profile";
     protected static final String VIEW_SETTINGS_PASSWORD = "settings/password";
     protected static final String URL_SETTINGS_PASSWORD = "/settings/password";
-    protected static final String VIEW_SETTINGS_NOTIFICATIONS = "settings/notification";
-    protected static final String URL_SETTINGS_NOTIFICATIONS = "/settings/notification";
+    protected static final String VIEW_SETTINGS_NOTIFICATIONS = "settings/notifications";
+    protected static final String URL_SETTINGS_NOTIFICATIONS = "/settings/notifications";
 
     private final AccountService accountService;
 
