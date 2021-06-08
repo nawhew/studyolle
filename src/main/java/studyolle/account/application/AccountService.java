@@ -138,7 +138,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public void updateNickname(Account account, NicknameForm nicknameForm) {
-        Account updateNicknameAccount = this.accountRepository.save(account.updateNickname(nicknameForm.getNickname()));
-        this.login(updateNicknameAccount);
+        Account updatedNicknameAccount = this.accountRepository.save(account.updateNickname(nicknameForm.getNickname()));
+        this.login(updatedNicknameAccount);
     }
 }

@@ -3,16 +3,15 @@ package studyolle.settings.dto;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import studyolle.account.application.AccountService;
 import studyolle.account.domain.AccountRepository;
 
 @Component
 public class NicknameFormValidator implements Validator {
 
-    private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
-    public NicknameFormValidator(AccountService accountService) {
-        this.accountService = accountService;
+    public NicknameFormValidator(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -28,9 +27,7 @@ public class NicknameFormValidator implements Validator {
     @Override
     public void validate(Object object, Errors errors) {
         NicknameForm nicknameForm = (NicknameForm) object;
-        try {
-            this.accountService.findByNickname(nicknameForm.getNickname());
-        } catch (IllegalArgumentException exception) {
+        if(this.accountRepository.findByNickname(nicknameForm.getNickname()).isPresent()) {
             errors.rejectValue("nickname", "wrong.value", "이미 사용중인 닉네임입니다.");
         }
     }
