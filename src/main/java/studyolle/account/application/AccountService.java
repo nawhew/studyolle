@@ -18,8 +18,8 @@ import studyolle.account.dto.SignUpForm;
 import studyolle.settings.dto.NicknameForm;
 import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
-import studyolle.settings.dto.TagForm;
 import studyolle.tag.domain.Tag;
+import studyolle.zone.domain.Zone;
 
 import java.util.List;
 import java.util.Optional;
@@ -159,5 +159,21 @@ public class AccountService implements UserDetailsService {
     public void removeTag(Account account, Tag tag) {
         this.accountRepository.findById(account.getId())
                 .ifPresent(account1 -> account1.removeTag(tag));
+    }
+
+    public Set<Zone> findZones(Account account) {
+        return this.accountRepository.findById(account.getId())
+                .orElseThrow(IllegalArgumentException::new)
+                .getZones();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        this.accountRepository.findById(account.getId())
+                .ifPresent(account1 -> account1.addZone(zone));
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        this.accountRepository.findById(account.getId())
+                .ifPresent(account1 -> account1.removeZone(zone));
     }
 }

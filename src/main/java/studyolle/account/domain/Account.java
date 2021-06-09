@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
 import studyolle.tag.domain.Tag;
+import studyolle.zone.domain.Zone;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -48,6 +49,9 @@ public class Account {
 
     @ManyToMany
     private final Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany
+    private Set<Zone> zones = new HashSet<>();
 
     /**
      * 회원가입 체크 메일 토큰 생성
@@ -118,5 +122,13 @@ public class Account {
 
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
+    }
+
+    public void addZone(Zone zone) {
+        this.zones.add(zone);
+    }
+
+    public void removeZone(Zone zone) {
+        this.zones.remove(zone);
     }
 }

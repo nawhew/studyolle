@@ -16,6 +16,8 @@ import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.settings.dto.*;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
+import studyolle.zone.application.ZoneService;
+import studyolle.zone.domain.Zone;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -36,11 +38,14 @@ public class SettingsController {
     protected static final String URL_SETTINGS_ACCOUNT = "/" + VIEW_SETTINGS_ACCOUNT;
     protected static final String VIEW_SETTINGS_TAGS = "settings/tags";
     protected static final String URL_SETTINGS_TAGS = "/" + VIEW_SETTINGS_TAGS;
+    protected static final String VIEW_SETTINGS_ZONES = "settings/zones";
+    protected static final String URL_SETTINGS_ZONES = "/" + VIEW_SETTINGS_ZONES;
 
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
     private final TagService tagService;
     private final ObjectMapper objectMapper;
+    private final ZoneService zoneService;
 
     @InitBinder("passwordForm")
     public void initBinderByPasswordForm(WebDataBinder webDataBinder) {
@@ -146,7 +151,6 @@ public class SettingsController {
         return VIEW_SETTINGS_TAGS;
     }
 
-
     @PostMapping(URL_SETTINGS_TAGS + "/add")
     public @ResponseBody ResponseEntity addTag(@CurrentUserAccount Account account, @RequestBody TagForm tagForm) {
         this.accountService.addTag(account, this.tagService.addTag(tagForm));
@@ -160,6 +164,37 @@ public class SettingsController {
             return ResponseEntity.badRequest().build();
         }
         this.accountService.removeTag(account, tag.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(URL_SETTINGS_ZONES)
+    public String zonesSettingForm(@CurrentUserAccount Account account, Model model) throws JsonProcessingException {
+        model.addAttribute("account", account);
+        model.addAttribute("zones", this.accountService.findZones(account).stream().map(Zone::toString));
+
+        List<String> allZones = this.zoneService.findAllZones().stream().map(Zone::toString)
+                .collect(Collectors.toList());
+        model.addAttribute("whitelist", this.objectMapper.writeValueAsString(allZones));
+        return VIEW_SETTINGS_ZONES;
+    }
+
+    @PostMapping(URL_SETTINGS_ZONES + "/add")
+    public @ResponseBody ResponseEntity addZone(@CurrentUserAccount Account account, @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> zone = this.zoneService.findByZoneForm(zoneForm);
+        if(zone.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.accountService.addZone(account, zone.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(URL_SETTINGS_ZONES + "/remove")
+    public @ResponseBody ResponseEntity removeZone(@CurrentUserAccount Account account, @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> zone = this.zoneService.findByZoneForm(zoneForm);
+        if(zone.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.accountService.removeZone(account, zone.get());
         return ResponseEntity.ok().build();
     }
 }
