@@ -1,14 +1,21 @@
 package studyolle.settings.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import studyolle.WithAccount;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
+import studyolle.settings.dto.TagForm;
+import studyolle.tag.application.TagService;
+import studyolle.tag.domain.Tag;
+
+import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +26,7 @@ import static studyolle.account.web.account.AccountControllerTestSupport.회원�
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class SettingsControllerTest {
 
     @Autowired
@@ -26,6 +34,12 @@ class SettingsControllerTest {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     @WithAccount("nawhew")
@@ -173,5 +187,89 @@ class SettingsControllerTest {
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attributeExists("nicknameForm"))
                 .andExpect(model().hasErrors());
+    }
+
+    @Test
+    @WithAccount("tagView")
+    @DisplayName("관심 목록 뷰 및 리스트 조회 성공")
+    void tagsSettingForm() throws Exception {
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_TAGS)
+                            .param("studyCreatedByEmail", "true")
+                            .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_TAGS))
+                .andExpect(model().attributeExists("account", "tags", "whitelist"));
+    }
+
+    @Test
+    @WithAccount("addTag")
+    @DisplayName("관심 목록 추가 성공")
+    void addTags() throws Exception {
+        // given
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("tag-test");
+        String nickname = "addTag";
+
+        // when - then
+        관심목록_추가_요청(tagForm);
+
+        // when
+        Tag tag = this.tagService.findByTitle(tagForm).get();
+        Account account = this.accountService.findByNickname(nickname);
+
+        // then
+        assertThat(tag).isNotNull();
+        assertThat(account.getTags()).contains(tag);
+    }
+
+    private void 관심목록_추가_요청(TagForm tagForm) throws Exception {
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_TAGS + "/add")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(tagForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAccount("removeTags")
+    @DisplayName("관심 목록 삭제 성공")
+    void removeTags() throws Exception {
+        // given
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("tag-test");
+        String nickname = "removeTags";
+        관심목록_추가_요청(tagForm);
+
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_TAGS + "/remove")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(tagForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+
+        // when
+        Tag tag = this.tagService.findByTitle(tagForm).get();
+        Account account = this.accountService.findByNickname(nickname);
+
+        // then
+        assertThat(tag).isNotNull();
+        assertThat(account.getTags()).doesNotContain(tag);
+    }
+
+    @Test
+    @WithAccount("removeFailTags")
+    @DisplayName("삭제를 요청한 태그가 없는 경우 관심목록 삭제 실패")
+    void removeTags_fail_to_not_exists_tag() throws Exception {
+        // given
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("notExistsTag");
+
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_TAGS + "/remove")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(tagForm))
+                            .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 }

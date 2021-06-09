@@ -8,6 +8,7 @@ import studyolle.tag.domain.Tag;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class Account {
     private boolean studyUpdatedByWeb;
 
     @ManyToMany
-    private Set<Tag> tags;
+    private final Set<Tag> tags = new HashSet<>();
 
     /**
      * 회원가입 체크 메일 토큰 생성
