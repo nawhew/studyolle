@@ -4,9 +4,11 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
+import studyolle.tag.domain.Tag;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +44,9 @@ public class Account {
     private boolean studyEnrollmentResultByWeb;
     private boolean studyUpdatedByEmail;
     private boolean studyUpdatedByWeb;
+
+    @ManyToMany
+    private Set<Tag> tags;
 
     /**
      * 회원가입 체크 메일 토큰 생성
@@ -103,5 +108,14 @@ public class Account {
     public Account updateNickname(String nickname) {
         this.nickname = nickname;
         return this;
+    }
+
+    public Account addTag(Tag tag) {
+        this.tags.add(tag);
+        return this;
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
     }
 }

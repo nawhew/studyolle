@@ -18,9 +18,12 @@ import studyolle.account.dto.SignUpForm;
 import studyolle.settings.dto.NicknameForm;
 import studyolle.settings.dto.Notifications;
 import studyolle.settings.dto.Profile;
+import studyolle.settings.dto.TagForm;
+import studyolle.tag.domain.Tag;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -140,5 +143,21 @@ public class AccountService implements UserDetailsService {
     public void updateNickname(Account account, NicknameForm nicknameForm) {
         Account updatedNicknameAccount = this.accountRepository.save(account.updateNickname(nicknameForm.getNickname()));
         this.login(updatedNicknameAccount);
+    }
+
+    public void addTag(Account account, Tag tag) {
+        this.accountRepository.findById(account.getId())
+                .ifPresent(account1 -> account1.addTag(tag));
+    }
+
+    public Set<Tag> findTags(Account account) {
+        return this.accountRepository.findById(account.getId())
+                .orElseThrow(IllegalArgumentException::new)
+                .getTags();
+    }
+
+    public void removeTag(Account account, Tag tag) {
+        this.accountRepository.findById(account.getId())
+                .ifPresent(account1 -> account1.removeTag(tag));
     }
 }

@@ -1,20 +1,23 @@
 package studyolle.settings.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.settings.dto.*;
+import studyolle.tag.application.TagService;
+import studyolle.tag.domain.Tag;
+import studyolle.tag.domain.TagRepository;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,9 +31,12 @@ public class SettingsController {
     protected static final String URL_SETTINGS_NOTIFICATIONS = "/" + VIEW_SETTINGS_NOTIFICATIONS;
     protected static final String VIEW_SETTINGS_ACCOUNT = "settings/account";
     protected static final String URL_SETTINGS_ACCOUNT = "/" + VIEW_SETTINGS_ACCOUNT;
+    protected static final String VIEW_SETTINGS_TAGS = "settings/tags";
+    protected static final String URL_SETTINGS_TAGS = "/" + VIEW_SETTINGS_TAGS;
 
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
+    private final TagService tagService;
 
     @InitBinder("passwordForm")
     public void initBinderByPasswordForm(WebDataBinder webDataBinder) {
@@ -105,7 +111,6 @@ public class SettingsController {
         return "redirect:" + URL_SETTINGS_NOTIFICATIONS;
     }
 
-
     @GetMapping(URL_SETTINGS_ACCOUNT)
     public String accountSettingForm(@CurrentUserAccount Account account, Model model) {
         model.addAttribute("account", account);
@@ -125,5 +130,30 @@ public class SettingsController {
         this.accountService.updateNickname(account, nicknameForm);
         attributes.addFlashAttribute("message", "닉네임설정을 변경했습니다.");
         return "redirect:" + URL_SETTINGS_ACCOUNT;
+    }
+
+    @GetMapping(URL_SETTINGS_TAGS)
+    public String tagsSettingForm(@CurrentUserAccount Account account, Model model) {
+        model.addAttribute("account", account);
+        model.addAttribute("tags", this.accountService.findTags(account).stream()
+                                                        .map(Tag::getTitle));
+        return VIEW_SETTINGS_TAGS;
+    }
+
+
+    @PostMapping(URL_SETTINGS_TAGS + "/add")
+    public @ResponseBody ResponseEntity addTag(@CurrentUserAccount Account account, @RequestBody TagForm tagForm) {
+        this.accountService.addTag(account, this.tagService.addTag(tagForm));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(URL_SETTINGS_TAGS + "/remove")
+    public @ResponseBody ResponseEntity removeTag(@CurrentUserAccount Account account, @RequestBody TagForm tagForm) {
+        Optional<Tag> tag = this.tagService.findByTitle(tagForm);
+        if(tag.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.accountService.removeTag(account, tag.get());
+        return ResponseEntity.ok().build();
     }
 }
