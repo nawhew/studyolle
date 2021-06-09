@@ -7,7 +7,9 @@ import studyolle.settings.dto.TagForm;
 import studyolle.tag.domain.Tag;
 import studyolle.tag.domain.TagRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -23,5 +25,9 @@ public class TagService {
 
     public Optional<Tag> findByTitle(TagForm tagForm) {
         return this.tagRepository.findByTitle(tagForm.getTagTitle());
+    }
+
+    public List<Tag> findAllTags() {
+        return this.tagRepository.findAll();
     }
 }

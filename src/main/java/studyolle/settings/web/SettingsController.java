@@ -1,5 +1,7 @@
 package studyolle.settings.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,10 +16,11 @@ import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.settings.dto.*;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
-import studyolle.tag.domain.TagRepository;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,6 +40,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
     private final TagService tagService;
+    private final ObjectMapper objectMapper;
 
     @InitBinder("passwordForm")
     public void initBinderByPasswordForm(WebDataBinder webDataBinder) {
@@ -133,10 +137,12 @@ public class SettingsController {
     }
 
     @GetMapping(URL_SETTINGS_TAGS)
-    public String tagsSettingForm(@CurrentUserAccount Account account, Model model) {
+    public String tagsSettingForm(@CurrentUserAccount Account account, Model model) throws JsonProcessingException {
         model.addAttribute("account", account);
-        model.addAttribute("tags", this.accountService.findTags(account).stream()
-                                                        .map(Tag::getTitle));
+        model.addAttribute("tags", this.accountService.findTags(account).stream().map(Tag::getTitle));
+
+        List<String> allTags = this.tagService.findAllTags().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("whitelist", this.objectMapper.writeValueAsString(allTags));
         return VIEW_SETTINGS_TAGS;
     }
 
