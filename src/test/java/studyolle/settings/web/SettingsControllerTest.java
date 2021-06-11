@@ -12,14 +12,18 @@ import studyolle.WithAccount;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.settings.dto.TagForm;
+import studyolle.settings.dto.ZoneForm;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
+import studyolle.zone.application.ZoneService;
+import studyolle.zone.domain.Zone;
 
 import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static studyolle.account.web.account.AccountControllerTestSupport.회원가입_요청;
@@ -37,6 +41,9 @@ class SettingsControllerTest {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private ZoneService zoneService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -194,11 +201,9 @@ class SettingsControllerTest {
     @DisplayName("관심 목록 뷰 및 리스트 조회 성공")
     void tagsSettingForm() throws Exception {
         // when - then
-        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_TAGS)
-                            .param("studyCreatedByEmail", "true")
-                            .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(SettingsController.URL_SETTINGS_TAGS))
+        this.mockMvc.perform(get(SettingsController.URL_SETTINGS_TAGS))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.VIEW_SETTINGS_TAGS))
                 .andExpect(model().attributeExists("account", "tags", "whitelist"));
     }
 
@@ -271,5 +276,71 @@ class SettingsControllerTest {
                             .content(this.objectMapper.writeValueAsString(tagForm))
                             .with(csrf()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAccount("zoneView")
+    @DisplayName("활동지역 뷰 요청 성공")
+    void zoneSettingForm() throws Exception {
+        // when - then
+        this.mockMvc.perform(get(SettingsController.URL_SETTINGS_ZONES))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.VIEW_SETTINGS_ZONES))
+                .andExpect(model().attributeExists("account", "zones", "whitelist"));
+    }
+
+    @Test
+    @WithAccount("addZone")
+    @DisplayName("유저에 활동 지역 추가 성공")
+    void addZone() throws Exception {
+        // given
+        String nickname = "addZone";
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName("Gunpo(군포시)/Gyeonggi");
+
+        // when - then
+        활동지역_추가_요청(zoneForm);
+
+        // when
+        Zone zone = this.zoneService.findByZoneForm(zoneForm).get();
+        Account account = this.accountService.findByNickname(nickname);
+
+        // then
+        assertThat(zone).isNotNull();
+        assertThat(account.getZones()).contains(zone);
+    }
+
+    private void 활동지역_추가_요청(ZoneForm zoneForm) throws Exception {
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_ZONES + "/add")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(zoneForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAccount("removeZone")
+    @DisplayName("활동 지역 삭제 성공")
+    void removeZone() throws Exception {
+        // given
+        String nickname = "removeZone";
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName("Gunpo(군포시)/Gyeonggi");
+        활동지역_추가_요청(zoneForm);
+
+        // when - then
+        this.mockMvc.perform(post(SettingsController.URL_SETTINGS_ZONES + "/remove")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(zoneForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+
+        // when
+        Zone zone = this.zoneService.findByZoneForm(zoneForm).get();
+        Account account = this.accountService.findByNickname(nickname);
+
+        // then
+        assertThat(zone).isNotNull();
+        assertThat(account.getZones()).doesNotContain(zone);
     }
 }
