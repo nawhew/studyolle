@@ -51,7 +51,7 @@ public class Account {
     private final Set<Tag> tags = new HashSet<>();
 
     @ManyToMany
-    private Set<Zone> zones = new HashSet<>();
+    private final Set<Zone> zones = new HashSet<>();
 
     /**
      * 회원가입 체크 메일 토큰 생성
