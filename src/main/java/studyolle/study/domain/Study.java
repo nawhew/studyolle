@@ -19,10 +19,10 @@ public class Study {
     private Long id;
 
     @ManyToMany
-    private Set<Account> managers = new HashSet<>();
+    private final Set<Account> managers = new HashSet<>();
 
     @ManyToMany
-    private Set<Account> members = new HashSet<>();
+    private final Set<Account> members = new HashSet<>();
 
     @Column(unique = true)
     private String path;
@@ -38,10 +38,10 @@ public class Study {
     private String image;
 
     @ManyToMany
-    private Set<Tag> tags = new HashSet<>();
+    private final Set<Tag> tags = new HashSet<>();
 
     @ManyToMany
-    private Set<Zone> zones = new HashSet<>();
+    private final Set<Zone> zones = new HashSet<>();
 
     private LocalDateTime publishedDateTime;
 
@@ -56,4 +56,10 @@ public class Study {
     private boolean closed;
 
     private boolean useBanner;
+
+    public Study addCreateMember(Account account) {
+        this.managers.add(account);
+        this.members.add(account);
+        return this;
+    }
 }
