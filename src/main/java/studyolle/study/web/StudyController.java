@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
@@ -18,6 +19,7 @@ import studyolle.study.dto.StudyFormValidator;
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,8 +50,21 @@ public class StudyController {
 
         Study study = this.studyService.createStudy(account, studyForm);
 
-        return "redirect:/";
+//        return "redirect:/";
         // TODO 스터디 페이지 생성 후 아래로 리다이렉트 경로 변경
-//        return "redirect:/study" + URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
+        return "redirect:/study/" + URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
+    }
+
+    @GetMapping("/study/{path}")
+    public String studyView(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute("account", account);
+
+        Optional<Study> study = this.studyService.findByPath(path);
+        if(study.isEmpty()) {
+            model.addAttribute("error", "해당 주소(" + path + ")의 스터디를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        model.addAttribute("study", study.get());
+        return "study/view";
     }
 }

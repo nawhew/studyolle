@@ -3,13 +3,13 @@ package studyolle.study.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.InitBinder;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
 import studyolle.study.dto.StudyForm;
-import studyolle.study.dto.StudyFormValidator;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -27,5 +27,9 @@ public class StudyService {
      */
     public Study createStudy(Account account, StudyForm studyForm) {
         return this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
+    }
+
+    public Optional<Study> findByPath(String path) {
+        return this.studyRepository.findByPath(path);
     }
 }
