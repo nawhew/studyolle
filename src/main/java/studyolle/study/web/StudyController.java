@@ -68,7 +68,13 @@ public class StudyController {
     @GetMapping("/study/{path}/members")
     public String viewStudyMembers(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
-        model.addAttribute("study", this.studyService.findByPath(path));
+
+        Optional<Study> study = this.studyService.findByPath(path);
+        if(study.isEmpty()) {
+            model.addAttribute("error", "해당 주소(" + path + ")의 스터디를 찾을 수 없습니다.");
+            return "redirect:/";
+        }
+        model.addAttribute("study", study.get());
         return "study/members";
     }
 }
