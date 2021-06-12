@@ -1,5 +1,6 @@
 package studyolle.study.domain;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,5 +10,6 @@ import java.util.Optional;
 public interface StudyRepository extends JpaRepository<Study, Long> {
     boolean existsByPath(String path);
 
+    @EntityGraph(value = "Study.withAllRelations", type = EntityGraph.EntityGraphType.LOAD)
     Optional<Study> findByPath(String path);
 }
