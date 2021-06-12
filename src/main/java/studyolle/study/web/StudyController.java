@@ -49,9 +49,6 @@ public class StudyController {
         }
 
         Study study = this.studyService.createStudy(account, studyForm);
-
-//        return "redirect:/";
-        // TODO 스터디 페이지 생성 후 아래로 리다이렉트 경로 변경
         return "redirect:/study/" + URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
     }
 
