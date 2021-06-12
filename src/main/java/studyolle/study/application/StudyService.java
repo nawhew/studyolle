@@ -19,14 +19,11 @@ public class StudyService {
 
     /**
      * 입력받은 폼으로 새로운 스터디를 개설합니다.
+     * 생성한 계정을 관리자, 멤버로 추가합니다.
      * @param account
      * @param studyForm
      */
     public Study createStudy(Account account, StudyForm studyForm) {
-        Account persistAccount =
-                this.accountRepository.findById(account.getId()).orElseThrow(IllegalArgumentException::new);
-        Study persistStudy = this.studyRepository.save(studyForm.toEntity());
-        persistStudy.addCreateMember(persistAccount);
-        return persistStudy;
+        return this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
     }
 }
