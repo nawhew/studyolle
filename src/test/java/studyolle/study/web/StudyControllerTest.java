@@ -46,7 +46,7 @@ class StudyControllerTest {
     }
 
     @Test
-    @WithAccount("newStudyForm")
+    @WithAccount("newStudy")
     @DisplayName("스터디 생성 성공")
     void newStudy() throws Exception {
         // given
@@ -98,5 +98,24 @@ class StudyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("account", "study"))
                 .andExpect(view().name("study/view"));
+    }
+
+
+    @Test
+    @WithAccount("viewStudyMembers")
+    @DisplayName("스터디 상세 화면 요청 성공")
+    void viewStudyMembers() throws Exception {
+        // given
+        String path = "new-study-test";
+        String title = "new-title";
+        String shortDescription = "short desc";
+        String fullDescription = "full desc";
+        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
+
+        // when - then
+        this.mockMvc.perform(get("/study/" + path + "/members"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account", "study"))
+                .andExpect(view().name("study/members"));
     }
 }
