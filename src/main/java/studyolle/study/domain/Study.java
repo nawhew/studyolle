@@ -3,6 +3,7 @@ package studyolle.study.domain;
 import lombok.*;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.UserAccount;
+import studyolle.study.dto.StudyDescriptionForm;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 
@@ -70,14 +71,29 @@ public class Study {
         Account account = userAccount.getAccount();
         return this.isPublished() && this.isRecruiting()
                 && !this.members.contains(account) && !this.managers.contains(account);
-
     }
 
     public boolean isMember(UserAccount userAccount) {
-        return this.members.contains(userAccount.getAccount());
+        return this.isMember(userAccount.getAccount());
+    }
+
+    public boolean isMember(Account account) {
+        return this.members.contains(account);
     }
 
     public boolean isManager(UserAccount userAccount) {
-        return this.managers.contains(userAccount.getAccount());
+        return this.isManager(userAccount.getAccount());
+    }
+
+    public boolean isManager(Account account) {
+        return this.managers.contains(account);
+    }
+
+    public void updateDescription(Account account, StudyDescriptionForm studyDescriptionForm) {
+        if(!this.isManager(account)) {
+            throw new IllegalArgumentException("매니저만 스터디 소개를 수정 할 수 있습니다.");
+        }
+        this.shortDescription = studyDescriptionForm.getShortDescription();
+        this.fullDescription = studyDescriptionForm.getFullDescription();
     }
 }

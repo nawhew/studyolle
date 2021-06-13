@@ -54,7 +54,7 @@ class StudyControllerTest {
         String title = "new-title";
         String shortDescription = "short desc";
         String fullDescription = "full desc";
-        String nickname = "newStudyForm";
+        String nickname = "newStudy";
 
         // when - then
         스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
@@ -117,5 +117,55 @@ class StudyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("account", "study"))
                 .andExpect(view().name("study/members"));
+    }
+
+    @Test
+    @WithAccount("studyDescriptionSettingForm")
+    @DisplayName("스터디 설명 설정 화면 요청 성공")
+    void studyDescriptionSettingForm() throws Exception {
+        // given
+        String path = "studyDescriptionSettingForm";
+        String title = "new-title";
+        String shortDescription = "short desc";
+        String fullDescription = "full desc";
+        String nickname = "newStudyForm";
+        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
+
+        // when - then
+        this.mockMvc.perform(get("/study/" + path + "/settings/description"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account", "study", "studyDescriptionForm"))
+                .andExpect(view().name("study/settings/description"));
+    }
+
+
+    @Test
+    @WithAccount("updateStudyDescription")
+    @DisplayName("스터디 설명 수정 성공")
+    void updateStudyDescription() throws Exception {
+        // given
+        String path = "updateStudyDescription";
+        String title = "new-title";
+        String shortDescription1 = "short desc 1";
+        String fullDescription1 = "full desc 1";
+        String shortDescription2 = "short desc 22";
+        String fullDescription2 = "full desc 22";
+        String requestUrl = "/study/" + path + "/settings/description";
+        스터디_개설_요청_성공(path, title, shortDescription1, fullDescription1);
+
+        // when - then
+        this.mockMvc.perform(post(requestUrl)
+                            .param("shortDescription", shortDescription2)
+                            .param("fullDescription", fullDescription2)
+                            .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(requestUrl));
+
+        // when
+        Study study = this.studyRepository.findByPath(path).get();
+
+        // then
+        assertThat(study.getShortDescription()).isEqualTo(shortDescription2);
+        assertThat(study.getFullDescription()).isEqualTo(fullDescription2);
     }
 }

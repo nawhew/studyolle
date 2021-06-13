@@ -7,9 +7,8 @@ import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
+import studyolle.study.dto.StudyDescriptionForm;
 import studyolle.study.dto.StudyForm;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,7 +28,14 @@ public class StudyService {
         return this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
     }
 
-    public Optional<Study> findByPath(String path) {
-        return this.studyRepository.findByPath(path);
+    public Study findByPath(String path) {
+        return this.studyRepository.findByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+    }
+
+    public Study updateStudyDescription(Account account, String path, StudyDescriptionForm studyDescriptionForm) {
+        Study study = this.findByPath(path);
+        study.updateDescription(account, studyDescriptionForm);
+        return study;
     }
 }
