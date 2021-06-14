@@ -222,4 +222,49 @@ public class StudySettingController {
         this.studyService.removeZone(account, path, zone.get());
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/study")
+    public String studySettingForm(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute("account", account);
+        Study study = this.studyService.findByPath(path);
+        model.addAttribute("study", study);
+        return "study/settings/study";
+    }
+
+    @PostMapping("/study/publish")
+    public String publishStudy(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.publish(account, path);
+        attributes.addFlashAttribute("message", "스터디를 공개하였습니다.");
+        return "redirect:/study/" + path + "/settings/study";
+    }
+
+    @PostMapping("/study/close")
+    public String closeStudy(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.close(account, path);
+        attributes.addFlashAttribute("message", "스터디를 시작하였습니다.");
+        return "redirect:/study/" + path + "/settings/study";
+    }
+
+    @PostMapping("/recruit/start")
+    public String startRecruit(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.startRecruit(account, path);
+        attributes.addFlashAttribute("message", "구성원 모집을 시작하였습니다.");
+        return "redirect:/study/" + path + "/settings/study";
+    }
+
+    @PostMapping("/recruit/stop")
+    public String stopRecruit(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.stopRecruit(account, path);
+        attributes.addFlashAttribute("message", "구성원 모집을 중지하였습니다.");
+        return "redirect:/study/" + path + "/settings/study";
+    }
+
+    // TODO /settings/study/path
+    // TODO /settings/study/title
+    // TODO /settings/study/remove
+
 }

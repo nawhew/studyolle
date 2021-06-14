@@ -21,7 +21,6 @@ import java.util.Set;
 public class StudyService {
 
     private final StudyRepository studyRepository;
-    private final AccountRepository accountRepository;
 
     /**
      * 입력받은 폼으로 새로운 스터디를 개설합니다.
@@ -82,5 +81,25 @@ public class StudyService {
     public void removeZone(Account account, String path, Zone zone) {
         Study study = this.findAccountWithZonesByPath(path);
         study.removeZone(account, zone);
+    }
+
+    public void publish(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.publish(account);
+    }
+
+    public void close(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.close(account);
+    }
+
+    public void startRecruit(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.startRecruit(account);
+    }
+
+    public void stopRecruit(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.stopRecruit(account);
     }
 }

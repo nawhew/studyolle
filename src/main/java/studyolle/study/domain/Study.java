@@ -151,4 +151,58 @@ public class Study {
         this.checkedManager(account);
         this.zones.remove(zone);
     }
+
+    /**
+     * draft 상태의 스터디를 공개합니다.
+     * @param account
+     */
+    public void publish(Account account) {
+        this.checkedManager(account);
+
+        if(this.isDraft()) {
+            this.published = true;
+            this.publishedDateTime = LocalDateTime.now();
+        }
+    }
+
+    private boolean isDraft() {
+        if(!this.published && !this.closed) {
+            return true;
+        }
+        throw new IllegalArgumentException("이미 공개되었거나 종료 된 스터디입니다.");
+    }
+
+    public void close(Account account) {
+        this.checkedManager(account);
+
+        if(this.isOpened()) {
+            this.closed = true;
+            this.closedDateTime = LocalDateTime.now();
+        }
+    }
+
+    private boolean isOpened() {
+        if(this.published && !this.closed) {
+            return true;
+        }
+        throw new IllegalArgumentException("시작 할 수 없는 스터디입니다.");
+    }
+
+    public void startRecruit(Account account) {
+        this.checkedManager(account);
+
+        if(this.isOpened()) {
+            this.recruiting = true;
+            this.recruitingUpdatedDateTime = LocalDateTime.now();
+        }
+    }
+
+    public void stopRecruit(Account account) {
+        this.checkedManager(account);
+
+        if(this.recruiting && this.isOpened()) {
+            this.recruiting = false;
+            this.recruitingUpdatedDateTime = LocalDateTime.now();
+        }
+    }
 }
