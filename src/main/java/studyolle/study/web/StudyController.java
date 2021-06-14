@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.study.application.StudyService;
@@ -97,13 +98,15 @@ public class StudyController {
      */
     @PostMapping("/study/{path}/settings/description")
     public String updateStudyDescription(@CurrentUserAccount Account account, @PathVariable String path
-            , @Valid StudyDescriptionForm studyDescriptionForm, Errors errors, Model model) {
+            , @Valid StudyDescriptionForm studyDescriptionForm, Errors errors, Model model
+            , RedirectAttributes attributes) {
         if(errors.hasErrors()) {
             model.addAttribute("account", account);
             return "study/settings/description";
         }
 
         this.studyService.updateStudyDescription(account, path, studyDescriptionForm);
+        attributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
         return "redirect:/study/" + path + "/settings/description";
     }
 }
