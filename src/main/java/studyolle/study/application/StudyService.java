@@ -65,22 +65,22 @@ public class StudyService {
     }
 
     public void addTag(Account account, String path, Tag tag) {
-        Study study = this.findByPath(path);
+        Study study = this.findAccountWithTagsByPath(path);
         study.addTag(account, tag);
     }
 
     public void removeTag(Account account, String path, Tag tag) {
-        Study study = this.findByPath(path);
+        Study study = this.findAccountWithTagsByPath(path);
         study.removeTag(account, tag);
     }
 
     public void addZone(Account account, String path, Zone zone) {
-        Study study = this.findByPath(path);
+        Study study = this.findAccountWithZonesByPath(path);
         study.addZone(account, zone);
     }
 
     public void removeZone(Account account, String path, Zone zone) {
-        Study study = this.findByPath(path);
+        Study study = this.findAccountWithZonesByPath(path);
         study.removeZone(account, zone);
     }
 }
