@@ -159,7 +159,7 @@ public class StudySettingController {
     public String studyTagSettingForm(@CurrentUserAccount Account account, @PathVariable String path
             , Model model) throws JsonProcessingException {
         model.addAttribute("account", account);
-        Study study = this.studyService.findByPath(path);
+        Study study = this.studyService.findAccountWithTagsByPath(path);
         model.addAttribute("study", study);
         model.addAttribute("tags", study.getTagTitles());
 
@@ -191,7 +191,7 @@ public class StudySettingController {
             , Model model) throws JsonProcessingException {
         model.addAttribute("account", account);
 
-        Study study = this.studyService.findByPath(path);
+        Study study = this.studyService.findAccountWithZonesByPath(path);
         model.addAttribute("study", study);
         model.addAttribute("zones", study.getZones().stream().map(Zone::toString));
 

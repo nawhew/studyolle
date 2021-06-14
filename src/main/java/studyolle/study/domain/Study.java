@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 @Builder @NoArgsConstructor @AllArgsConstructor
 @NamedEntityGraph(name = "Study.withAllRelations", attributeNodes = {@NamedAttributeNode("tags")
         , @NamedAttributeNode("zones"), @NamedAttributeNode("managers"), @NamedAttributeNode("members")})
+@NamedEntityGraph(name = "Study.withTagsAndManagers", attributeNodes = {
+        @NamedAttributeNode("tags"), @NamedAttributeNode("managers")})
+@NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
+        @NamedAttributeNode("zones"), @NamedAttributeNode("managers")})
 public class Study {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -38,6 +38,16 @@ public class StudyService {
                 .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
     }
 
+    public Study findAccountWithTagsByPath(String path) {
+        return this.studyRepository.findByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+    }
+
+    public Study findAccountWithZonesByPath(String path) {
+        return this.studyRepository.findByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+    }
+
     public Study updateStudyDescription(Account account, String path, StudyDescriptionForm studyDescriptionForm) {
         Study study = this.findByPath(path);
         study.updateDescription(account, studyDescriptionForm);
