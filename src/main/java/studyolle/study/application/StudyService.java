@@ -38,4 +38,14 @@ public class StudyService {
         study.updateDescription(account, studyDescriptionForm);
         return study;
     }
+
+    public void updateStudyBannerImage(Account account, String path, String image) {
+        Study study = this.findByPath(path);
+        study.updateImage(account, image);
+    }
+
+    public void updateStudyUseBanner(Account account, String path, boolean useBanner) {
+        Study study = this.findByPath(path);
+        study.updateUseBanner(account, useBanner);
+    }
 }

@@ -1,7 +1,6 @@
 package studyolle.study.web;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -17,10 +16,8 @@ import studyolle.study.dto.StudyForm;
 import studyolle.study.dto.StudyFormValidator;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -108,5 +105,75 @@ public class StudyController {
         this.studyService.updateStudyDescription(account, path, studyDescriptionForm);
         attributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
         return "redirect:/study/" + path + "/settings/description";
+    }
+
+    /**
+     * 스터디 배너 이미지 설정 폼 요청을 처리합니다.
+     * @param account
+     * @param path
+     * @param model
+     * @return
+     */
+    @GetMapping("/study/{path}/settings/banner")
+    public String studyBannerSettingForm(@CurrentUserAccount Account account, @PathVariable String path
+            , Model model) {
+        model.addAttribute("account", account);
+        Study study = this.studyService.findByPath(path);
+        model.addAttribute("study", study);
+        if(!study.isManager(account)) {
+            return "study/view";
+        }
+        return "study/settings/banner";
+    }
+
+    /**
+     * 배너 이미지를 변경합니다.
+     * @param account
+     * @param path
+     * @param errors
+     * @param model
+     * @param attributes
+     * @return
+     */
+    @PostMapping("/study/{path}/settings/banner")
+    public String updateStudyBannerImage(@CurrentUserAccount Account account, @PathVariable String path
+            , String image, RedirectAttributes attributes) {
+        this.studyService.updateStudyBannerImage(account, path, image);
+        attributes.addFlashAttribute("message", "스터디 배너 이미지를 수정했습니다.");
+        return "redirect:/study/" + path + "/settings/banner";
+    }
+
+    /**
+     * 스터디에서 배너를 사용하도록 변경합니다.
+     * @param account
+     * @param path
+     * @param errors
+     * @param model
+     * @param attributes
+     * @return
+     */
+    @PostMapping("/study/{path}/settings/banner/enable")
+    public String updateStudyBannerToEnable(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.updateStudyUseBanner(account, path, true);
+        attributes.addFlashAttribute("message", "스터디에서 배너를 사용하도록 수정했습니다.");
+        return "redirect:/study/" + path + "/settings/banner";
+    }
+
+    /**
+     * 스터디에서 배너를 사용하지 않도록 변경합니다.
+     * @param account
+     * @param path
+     * @param errors
+     * @param model
+     * @param attributes
+     * @return
+     */
+    @PostMapping("/study/{path}/settings/banner/disable")
+    public String updateStudyBannerToDisable(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.updateStudyUseBanner(account, path, false);
+        attributes.addFlashAttribute("message", "스터디에서 배너를 사용하지 않도록 수정했습니다.");
+        return "redirect:/study/" + path + "/settings/banner";
     }
 }

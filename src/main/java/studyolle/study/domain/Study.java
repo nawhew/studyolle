@@ -61,6 +61,14 @@ public class Study {
 
     private boolean useBanner;
 
+    /**
+     * 배너 이미지를 반환합니다. (없는 경우 기본 이미지를 반환합니다)
+     * @return 
+     */
+    public String getImage() {
+        return image != null ? image : "/images/default-banner.png";
+    }
+
     public Study addCreateMember(Account account) {
         this.managers.add(account);
         this.members.add(account);
@@ -89,11 +97,29 @@ public class Study {
         return this.managers.contains(account);
     }
 
-    public void updateDescription(Account account, StudyDescriptionForm studyDescriptionForm) {
+    /**
+     * 해당 계정이 매니저가 아닌 경우 오류를 던집니다
+     * @param account 
+     */
+    private void checkedManager(Account account) {
         if(!this.isManager(account)) {
             throw new IllegalArgumentException("매니저만 스터디 소개를 수정 할 수 있습니다.");
         }
+    }
+
+    public void updateDescription(Account account, StudyDescriptionForm studyDescriptionForm) {
+        this.checkedManager(account);
         this.shortDescription = studyDescriptionForm.getShortDescription();
         this.fullDescription = studyDescriptionForm.getFullDescription();
+    }
+
+    public void updateImage(Account account, String image) {
+        this.checkedManager(account);
+        this.image = image;
+    }
+
+    public void updateUseBanner(Account account, boolean useBanner) {
+        this.checkedManager(account);
+        this.useBanner = useBanner;
     }
 }
