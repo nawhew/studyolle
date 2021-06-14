@@ -13,11 +13,14 @@ import studyolle.WithAccount;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.settings.dto.TagForm;
+import studyolle.settings.dto.ZoneForm;
 import studyolle.settings.web.SettingsController;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
 import studyolle.tag.domain.Tag;
 import studyolle.tag.domain.TagRepository;
+import studyolle.zone.domain.Zone;
+import studyolle.zone.domain.ZoneRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,6 +47,9 @@ class StudySettingControllerTest {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private ZoneRepository zoneRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -266,5 +272,79 @@ class StudySettingControllerTest {
         // then
         assertThat(tag).isNotNull();
         assertThat(study.getTags()).doesNotContain(tag);
+    }
+
+    @Test
+    @WithAccount("zoneView")
+    @DisplayName("활동지역 뷰 요청 성공")
+    void zoneSettingForm() throws Exception {
+        // given
+        String path = "zoneView";
+        스터디_개설_요청_성공(this.mockMvc, path);
+
+        // when - then
+        this.mockMvc.perform(get("/study/" + path + "/settings/zones"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/zones"))
+                .andExpect(model().attributeExists("account", "study", "zones", "whitelist"));
+    }
+
+    @Test
+    @WithAccount("addZone")
+    @DisplayName("유저에 활동 지역 추가 성공")
+    void addZone() throws Exception {
+        // given
+        String path = "addZone";
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName("Gunpo(군포시)/Gyeonggi");
+        스터디_개설_요청_성공(this.mockMvc, path);
+
+        // when - then
+        활동지역_추가_요청(path, zoneForm);
+
+        // when
+        Zone zone = this.zoneRepository
+                .findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName()).get();
+        Study study = this.studyRepository.findByPath(path).get();
+
+        // then
+        assertThat(zone).isNotNull();
+        assertThat(study.getZones()).contains(zone);
+    }
+
+    private void 활동지역_추가_요청(String path, ZoneForm zoneForm) throws Exception {
+        this.mockMvc.perform(post("/study/" + path + "/settings/zones" + "/add")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(zoneForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAccount("removeZone")
+    @DisplayName("활동 지역 삭제 성공")
+    void removeZone() throws Exception {
+        // given
+        String path = "removeZone";
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName("Gunpo(군포시)/Gyeonggi");
+        스터디_개설_요청_성공(this.mockMvc, path);
+        활동지역_추가_요청(path, zoneForm);
+
+        // when - then
+        this.mockMvc.perform(post("/study/" + path + "/settings/zones" + "/remove")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(zoneForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+
+        // when
+        Zone zone = this.zoneRepository
+                .findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName()).get();
+        Study study = this.studyRepository.findByPath(path).get();
+
+        // then
+        assertThat(zone).isNotNull();
+        assertThat(study.getZones()).doesNotContain(zone);
     }
 }

@@ -10,6 +10,7 @@ import studyolle.study.domain.StudyRepository;
 import studyolle.study.dto.StudyDescriptionForm;
 import studyolle.study.dto.StudyForm;
 import studyolle.tag.domain.Tag;
+import studyolle.zone.domain.Zone;
 
 import java.util.Optional;
 import java.util.Set;
@@ -61,5 +62,15 @@ public class StudyService {
     public void removeTag(Account account, String path, Tag tag) {
         Study study = this.findByPath(path);
         study.removeTag(account, tag);
+    }
+
+    public void addZone(Account account, String path, Zone zone) {
+        Study study = this.findByPath(path);
+        study.addZone(account, zone);
+    }
+
+    public void removeZone(Account account, String path, Zone zone) {
+        Study study = this.findByPath(path);
+        study.removeZone(account, zone);
     }
 }

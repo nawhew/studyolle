@@ -137,4 +137,14 @@ public class Study {
         this.checkedManager(account);
         this.tags.remove(tag);
     }
+
+    public void addZone(Account account, Zone zone) {
+        this.checkedManager(account);
+        this.zones.add(zone);
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        this.checkedManager(account);
+        this.zones.remove(zone);
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.settings.dto.TagForm;
+import studyolle.settings.dto.ZoneForm;
 import studyolle.study.application.StudyService;
 import studyolle.study.domain.Study;
 import studyolle.study.dto.StudyDescriptionForm;
@@ -21,6 +22,7 @@ import studyolle.study.dto.StudyFormValidator;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.application.ZoneService;
+import studyolle.zone.domain.Zone;
 
 import javax.validation.Valid;
 import java.net.URLEncoder;
@@ -36,6 +38,7 @@ public class StudySettingController {
 
     private final StudyService studyService;
     private final TagService tagService;
+    private final ZoneService zoneService;
     private final ObjectMapper objectMapper;
 
     /**
@@ -180,6 +183,43 @@ public class StudySettingController {
             return ResponseEntity.badRequest().build();
         }
         this.studyService.removeTag(account, path, tag.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/zones")
+    public String zonesSettingForm(@CurrentUserAccount Account account, @PathVariable String path
+            , Model model) throws JsonProcessingException {
+        model.addAttribute("account", account);
+
+        Study study = this.studyService.findByPath(path);
+        model.addAttribute("study", study);
+        model.addAttribute("zones", study.getZones().stream().map(Zone::toString));
+
+        List<String> allZones = this.zoneService.findAllZones().stream().map(Zone::toString)
+                .collect(Collectors.toList());
+        model.addAttribute("whitelist", this.objectMapper.writeValueAsString(allZones));
+        return "study/settings/zones";
+    }
+
+    @PostMapping("/zones/add")
+    public @ResponseBody ResponseEntity addZone(@CurrentUserAccount Account account, @PathVariable String path
+            , @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> zone = this.zoneService.findByZoneForm(zoneForm);
+        if(zone.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.studyService.addZone(account, path, zone.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/zones/remove")
+    public @ResponseBody ResponseEntity removeZone(@CurrentUserAccount Account account, @PathVariable String path
+            , @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> zone = this.zoneService.findByZoneForm(zoneForm);
+        if(zone.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.studyService.removeZone(account, path, zone.get());
         return ResponseEntity.ok().build();
     }
 }
