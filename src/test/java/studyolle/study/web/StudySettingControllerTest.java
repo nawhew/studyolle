@@ -1,17 +1,23 @@
 package studyolle.study.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.WithAccount;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
+import studyolle.settings.dto.TagForm;
+import studyolle.settings.web.SettingsController;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
+import studyolle.tag.domain.Tag;
+import studyolle.tag.domain.TagRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,6 +41,12 @@ class StudySettingControllerTest {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     @WithAccount("studyDescriptionSettingForm")
@@ -178,5 +190,81 @@ class StudySettingControllerTest {
 
         // then
         assertFalse(study.isUseBanner());
+    }
+
+
+    @Test
+    @WithAccount("tagView")
+    @DisplayName("관심 목록 뷰 및 리스트 조회 성공")
+    void tagsSettingForm() throws Exception {
+        // given
+        String path = "tagView";
+        String title = "new-title";
+        String shortDescription = "short desc";
+        String fullDescription = "full desc";
+        스터디_개설_요청_성공(this.mockMvc, path, title, shortDescription, fullDescription);
+
+        // when - then
+        this.mockMvc.perform(get("/study/" + path + "/settings/tags"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/tags"))
+                .andExpect(model().attributeExists("account", "study", "tags", "whitelist"));
+    }
+
+    @Test
+    @WithAccount("addTag")
+    @DisplayName("관심 목록 추가 성공")
+    void addTag() throws Exception {
+        // given
+        String path = "addTags";
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("tag-test");
+        스터디_개설_요청_성공(this.mockMvc, path);
+
+        // when - then
+        관심목록_추가_요청(path, tagForm);
+
+        // when
+        Tag tag = this.tagRepository.findByTitle(tagForm.getTagTitle()).get();
+        Study study = this.studyRepository.findByPath(path).get();
+
+        // then
+        assertThat(tag).isNotNull();
+        assertThat(study.getTags()).contains(tag);
+    }
+
+    private void 관심목록_추가_요청(String path, TagForm tagForm) throws Exception {
+        this.mockMvc.perform(post("/study/" + path + "/settings/tags" + "/add")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(tagForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAccount("removeTag")
+    @DisplayName("관심 목록 삭제 성공")
+    void removeTag() throws Exception {
+        // given
+        String path = "removeTag";
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("tag-test");
+        스터디_개설_요청_성공(this.mockMvc, path);
+        관심목록_추가_요청(path, tagForm);
+
+        // when - then
+        this.mockMvc.perform(post("/study/" + path + "/settings/tags" + "/remove")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(this.objectMapper.writeValueAsString(tagForm))
+                            .with(csrf()))
+                .andExpect(status().isOk());
+
+        // when
+        Tag tag = this.tagRepository.findByTitle(tagForm.getTagTitle()).get();
+        Study study = this.studyRepository.findByPath(path).get();
+
+        // then
+        assertThat(tag).isNotNull();
+        assertThat(study.getTags()).doesNotContain(tag);
     }
 }

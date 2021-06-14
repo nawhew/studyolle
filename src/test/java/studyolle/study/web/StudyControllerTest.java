@@ -71,6 +71,13 @@ class StudyControllerTest {
         assertThat(study.getPath()).isEqualTo(path);
     }
 
+    public static void 스터디_개설_요청_성공(MockMvc mockMvc, String path) throws Exception {
+        String title = "new-title";
+        String shortDescription = "short desc";
+        String fullDescription = "full desc";
+        스터디_개설_요청_성공(mockMvc, path, title, shortDescription, fullDescription);
+    }
+
     public static void 스터디_개설_요청_성공(MockMvc mockMvc, String path, String title
             , String shortDescription, String fullDescription) throws Exception {
         mockMvc.perform(post("/new-study")

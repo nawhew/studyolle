@@ -9,6 +9,10 @@ import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
 import studyolle.study.dto.StudyDescriptionForm;
 import studyolle.study.dto.StudyForm;
+import studyolle.tag.domain.Tag;
+
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -47,5 +51,15 @@ public class StudyService {
     public void updateStudyUseBanner(Account account, String path, boolean useBanner) {
         Study study = this.findByPath(path);
         study.updateUseBanner(account, useBanner);
+    }
+
+    public void addTag(Account account, String path, Tag tag) {
+        Study study = this.findByPath(path);
+        study.addTag(account, tag);
+    }
+
+    public void removeTag(Account account, String path, Tag tag) {
+        Study study = this.findByPath(path);
+        study.removeTag(account, tag);
     }
 }

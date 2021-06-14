@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
@@ -121,5 +122,19 @@ public class Study {
     public void updateUseBanner(Account account, boolean useBanner) {
         this.checkedManager(account);
         this.useBanner = useBanner;
+    }
+
+    public Set<String> getTagTitles() {
+        return this.tags.stream().map(Tag::getTitle).collect(Collectors.toSet());
+    }
+
+    public void addTag(Account account, Tag tag) {
+        this.checkedManager(account);
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Account account, Tag tag) {
+        this.checkedManager(account);
+        this.tags.remove(tag);
     }
 }
