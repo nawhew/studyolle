@@ -58,7 +58,7 @@ class StudyControllerTest {
         String nickname = "newStudy";
 
         // when - then
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
+        스터디_개설_요청_성공(this.mockMvc, path, title, shortDescription, fullDescription);
 
         // when
         Study study = this.studyRepository.findByPath(path).get();
@@ -71,8 +71,9 @@ class StudyControllerTest {
         assertThat(study.getPath()).isEqualTo(path);
     }
 
-    private void 스터디_개설_요청_성공(String path, String title, String shortDescription, String fullDescription) throws Exception {
-        this.mockMvc.perform(post("/new-study")
+    public static void 스터디_개설_요청_성공(MockMvc mockMvc, String path, String title
+            , String shortDescription, String fullDescription) throws Exception {
+        mockMvc.perform(post("/new-study")
                     .param("path", path)
                     .param("title", title)
                     .param("shortDescription", shortDescription)
@@ -92,7 +93,7 @@ class StudyControllerTest {
         String shortDescription = "short desc";
         String fullDescription = "full desc";
         String nickname = "newStudyForm";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
+        스터디_개설_요청_성공(this.mockMvc, path, title, shortDescription, fullDescription);
 
         // when - then
         this.mockMvc.perform(get("/study/" + path))
@@ -111,156 +112,12 @@ class StudyControllerTest {
         String title = "new-title";
         String shortDescription = "short desc";
         String fullDescription = "full desc";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
+        스터디_개설_요청_성공(this.mockMvc, path, title, shortDescription, fullDescription);
 
         // when - then
         this.mockMvc.perform(get("/study/" + path + "/members"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("account", "study"))
                 .andExpect(view().name("study/members"));
-    }
-
-    @Test
-    @WithAccount("studyDescriptionSettingForm")
-    @DisplayName("스터디 설명 설정 화면 요청 성공")
-    void studyDescriptionSettingForm() throws Exception {
-        // given
-        String path = "studyDescriptionSettingForm";
-        String title = "new-title";
-        String shortDescription = "short desc";
-        String fullDescription = "full desc";
-        String nickname = "newStudyForm";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
-
-        // when - then
-        this.mockMvc.perform(get("/study/" + path + "/settings/description"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("account", "study", "studyDescriptionForm"))
-                .andExpect(view().name("study/settings/description"));
-    }
-
-
-    @Test
-    @WithAccount("updateStudyDescription")
-    @DisplayName("스터디 설명 수정 성공")
-    void updateStudyDescription() throws Exception {
-        // given
-        String path = "updateStudyDescription";
-        String title = "new-title";
-        String shortDescription1 = "short desc 1";
-        String fullDescription1 = "full desc 1";
-        String shortDescription2 = "short desc 22";
-        String fullDescription2 = "full desc 22";
-        String requestUrl = "/study/" + path + "/settings/description";
-        스터디_개설_요청_성공(path, title, shortDescription1, fullDescription1);
-
-        // when - then
-        this.mockMvc.perform(post(requestUrl)
-                            .param("shortDescription", shortDescription2)
-                            .param("fullDescription", fullDescription2)
-                            .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(requestUrl));
-
-        // when
-        Study study = this.studyRepository.findByPath(path).get();
-
-        // then
-        assertThat(study.getShortDescription()).isEqualTo(shortDescription2);
-        assertThat(study.getFullDescription()).isEqualTo(fullDescription2);
-    }
-
-
-    @Test
-    @WithAccount("studyBannerSettingForm")
-    @DisplayName("스터디 설명 설정 화면 요청 성공")
-    void studyBannerSettingForm() throws Exception {
-        // given
-        String path = "studyBannerSettingForm";
-        String title = "new-title";
-        String shortDescription = "short desc";
-        String fullDescription = "full desc";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
-
-        // when - then
-        this.mockMvc.perform(get("/study/" + path + "/settings/banner"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("account", "study"))
-                .andExpect(view().name("study/settings/banner"));
-    }
-
-    @Test
-    @WithAccount("updateStudyBanner")
-    @DisplayName("스터디 배너 이미지 수정 성공")
-    void updateStudyBanner() throws Exception {
-        // given
-        String path = "updateStudyBanner";
-        String title = "new-title";
-        String shortDescription = "short desc";
-        String fullDescription = "full desc";
-        String testUpdateImage = "iii";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
-
-        // when - then
-        this.mockMvc.perform(post("/study/" + path + "/settings/banner")
-                .param("image", testUpdateImage)
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/study/" + path + "/settings/banner"));
-
-        // when
-        Study study = this.studyRepository.findByPath(path).get();
-
-        // then
-        assertThat(study.getImage()).isEqualTo(testUpdateImage);
-    }
-
-
-    @Test
-    @WithAccount("enableStudyBanner")
-    @DisplayName("스터디 배너 이미지 사용 요청 성공")
-    void enableStudyBanner() throws Exception {
-        // given
-        String path = "enableStudyBanner";
-        String title = "new-title";
-        String shortDescription = "short desc";
-        String fullDescription = "full desc";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
-
-        // when - then
-        this.mockMvc.perform(post("/study/" + path + "/settings/banner/enable")
-                            .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/study/" + path + "/settings/banner"));
-
-        // when
-        Study study = this.studyRepository.findByPath(path).get();
-
-        // then
-        assertTrue(study.isUseBanner());
-    }
-
-    @Test
-    @WithAccount("disableStudyBanner")
-    @DisplayName("스터디 배너 이미지 미사용 요청 성공")
-    void disableStudyBanner() throws Exception {
-        // given
-        String path = "disableStudyBanner";
-        String title = "new-title";
-        String shortDescription = "short desc";
-        String fullDescription = "full desc";
-        스터디_개설_요청_성공(path, title, shortDescription, fullDescription);
-
-        // when - then
-        this.mockMvc.perform(post("/study/" + path + "/settings/banner/disable")
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/study/" + path + "/settings/banner"));
-
-        // when
-        Study study = this.studyRepository.findByPath(path).get();
-
-        // then
-        assertFalse(study.isUseBanner());
     }
 }
