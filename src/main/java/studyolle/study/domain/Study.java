@@ -226,6 +226,9 @@ public class Study {
     }
 
     public void leaveMember(Account account) {
+        if(this.isManager(account)) {
+            this.managers.remove(account);
+        }
         this.members.remove(account);
     }
 }
