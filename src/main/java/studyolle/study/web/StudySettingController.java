@@ -81,7 +81,7 @@ public class StudySettingController {
 
         this.studyService.updateStudyDescription(account, path, studyDescriptionForm);
         attributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
-        return "redirect:/study/" + path + "/settings/description";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/description";
     }
 
     /**
@@ -115,7 +115,7 @@ public class StudySettingController {
             , String image, RedirectAttributes attributes) {
         this.studyService.updateStudyBannerImage(account, path, image);
         attributes.addFlashAttribute("message", "스터디 배너 이미지를 수정했습니다.");
-        return "redirect:/study/" + path + "/settings/banner";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/banner";
     }
 
     /**
@@ -130,7 +130,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.updateStudyUseBanner(account, path, true);
         attributes.addFlashAttribute("message", "스터디에서 배너를 사용하도록 수정했습니다.");
-        return "redirect:/study/" + path + "/settings/banner";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/banner";
     }
 
     /**
@@ -145,7 +145,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.updateStudyUseBanner(account, path, false);
         attributes.addFlashAttribute("message", "스터디에서 배너를 사용하지 않도록 수정했습니다.");
-        return "redirect:/study/" + path + "/settings/banner";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/banner";
     }
 
 
@@ -230,7 +230,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.publish(account, path);
         attributes.addFlashAttribute("message", "스터디를 공개하였습니다.");
-        return "redirect:/study/" + path + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/study/close")
@@ -238,7 +238,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.close(account, path);
         attributes.addFlashAttribute("message", "스터디를 시작하였습니다.");
-        return "redirect:/study/" + path + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/recruit/start")
@@ -246,7 +246,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.startRecruit(account, path);
         attributes.addFlashAttribute("message", "구성원 모집을 시작하였습니다.");
-        return "redirect:/study/" + path + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/recruit/stop")
@@ -254,7 +254,7 @@ public class StudySettingController {
             , RedirectAttributes attributes) {
         this.studyService.stopRecruit(account, path);
         attributes.addFlashAttribute("message", "구성원 모집을 중지하였습니다.");
-        return "redirect:/study/" + path + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/study/path")
@@ -262,7 +262,7 @@ public class StudySettingController {
             , @RequestParam String newPath, RedirectAttributes attributes) {
         this.studyService.changeStudyPath(account, path, newPath);
         attributes.addFlashAttribute("message", "스터디 경로를 변경하였습니다.");
-        return "redirect:/study/" + newPath + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(newPath, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/study/title")
@@ -270,7 +270,7 @@ public class StudySettingController {
             , @RequestParam String newTitle, RedirectAttributes attributes) {
         this.studyService.changeStudyTitle(account, path, newTitle);
         attributes.addFlashAttribute("message", "스터디명을 변경하였습니다.");
-        return "redirect:/study/" + path + "/settings/study";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/settings/study";
     }
 
     @PostMapping("/study/remove")

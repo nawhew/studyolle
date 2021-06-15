@@ -68,13 +68,13 @@ public class StudyController {
     public String joinStudy(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
         model.addAttribute("study", this.studyService.joinStudy(account, path));
-        return "study/view";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
     @GetMapping("/study/{path}/leave")
     public String leaveStudy(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
         model.addAttribute("study", this.studyService.leaveStudy(account, path));
-        return "study/view";
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 }
