@@ -219,4 +219,12 @@ public class Study {
         }
         this.title = newTitle;
     }
+
+    public void joinMember(Account account) {
+        this.members.add(account);
+    }
+
+    public void leaveMember(Account account) {
+        this.members.remove(account);
+    }
 }

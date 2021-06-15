@@ -121,4 +121,16 @@ public class StudyService {
         study.checkedManager(account);
         this.studyRepository.delete(study);
     }
+
+    public Study joinStudy(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.joinMember(account);
+        return study;
+    }
+
+    public Study leaveStudy(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.leaveMember(account);
+        return study;
+    }
 }

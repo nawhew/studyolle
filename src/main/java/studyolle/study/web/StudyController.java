@@ -61,6 +61,20 @@ public class StudyController {
     public String viewStudyMembers(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
         model.addAttribute("study", this.studyService.findByPath(path));
-        return "study/members";
+        return "study/view";
+    }
+
+    @GetMapping("/study/{path}/join")
+    public String joinStudy(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute("study", this.studyService.joinStudy(account, path));
+        return "study/view";
+    }
+
+    @GetMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute("study", this.studyService.leaveStudy(account, path));
+        return "study/view";
     }
 }
