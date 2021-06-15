@@ -271,7 +271,20 @@ public class StudySettingController {
         return "redirect:/study/" + newPath + "/settings/study";
     }
 
-    // TODO /settings/study/title
-    // TODO /settings/study/remove
+    @PostMapping("/study/title")
+    public String changeStudyTitle(@CurrentUserAccount Account account, @PathVariable String path
+            , @RequestParam String newTitle, RedirectAttributes attributes) {
+        this.studyService.changeStudyTitle(account, path, newTitle);
+        attributes.addFlashAttribute("message", "스터디명을 변경하였습니다.");
+        return "redirect:/study/" + path + "/settings/study";
+    }
+
+    @PostMapping("/study/remove")
+    public String changeStudyTitle(@CurrentUserAccount Account account, @PathVariable String path
+            , RedirectAttributes attributes) {
+        this.studyService.removeStudy(account, path);
+        attributes.addFlashAttribute("message", "스터디를 완전 삭제하였습니다.");
+        return "redirect:/";
+    }
 
 }

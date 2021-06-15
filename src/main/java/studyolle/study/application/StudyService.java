@@ -110,4 +110,15 @@ public class StudyService {
             study.changePath(account, newPath);
         }
     }
+
+    public void changeStudyTitle(Account account, String path, String newTitle) {
+        Study study = this.findByPath(path);
+        study.changeTitle(account, newTitle);
+    }
+
+    public void removeStudy(Account account, String path) {
+        Study study = this.findByPath(path);
+        study.checkedManager(account);
+        this.studyRepository.delete(study);
+    }
 }

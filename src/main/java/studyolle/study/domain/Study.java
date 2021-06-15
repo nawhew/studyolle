@@ -107,9 +107,9 @@ public class Study {
      * 해당 계정이 매니저가 아닌 경우 오류를 던집니다
      * @param account 
      */
-    private void checkedManager(Account account) {
+    public void checkedManager(Account account) {
         if(!this.isManager(account)) {
-            throw new IllegalArgumentException("매니저만 스터디 소개를 수정 할 수 있습니다.");
+            throw new IllegalArgumentException("매니저만 스터디 정보를 수정 할 수 있습니다.");
         }
     }
 
@@ -210,5 +210,13 @@ public class Study {
     public void changePath(Account account, String newPath) {
         this.checkedManager(account);
         this.path = newPath;
+    }
+
+    public void changeTitle(Account account, String newTitle) {
+        this.checkedManager(account);
+        if(newTitle.length() > 50) {
+            throw new IllegalArgumentException("스터디 이름은 50자까지 가능합니다.");
+        }
+        this.title = newTitle;
     }
 }
