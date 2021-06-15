@@ -37,13 +37,23 @@ public class StudyService {
                 .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
     }
 
+    public Study findStudyWithManagersByPath(String path) {
+        return this.studyRepository.findStudyWithManagersByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+    }
+
+    public Study findStudyWithMembersByPath(String path) {
+        return this.studyRepository.findStudyWithMembersByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+    }
+
     public Study findAccountWithTagsByPath(String path) {
-        return this.studyRepository.findAccountWithTagsByPath(path)
+        return this.studyRepository.findStudyWithTagsByPath(path)
                 .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
     }
 
     public Study findAccountWithZonesByPath(String path) {
-        return this.studyRepository.findAccountWithZonesByPath(path)
+        return this.studyRepository.findStudyWithZonesByPath(path)
                 .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
     }
 
@@ -84,27 +94,27 @@ public class StudyService {
     }
 
     public void publish(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.publish(account);
     }
 
     public void close(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.close(account);
     }
 
     public void startRecruit(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.startRecruit(account);
     }
 
     public void stopRecruit(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.stopRecruit(account);
     }
 
     public void changeStudyPath(Account account, String path, String newPath) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
 
         if(!this.studyRepository.existsByPath(newPath)) {
             study.changePath(account, newPath);
@@ -112,24 +122,24 @@ public class StudyService {
     }
 
     public void changeStudyTitle(Account account, String path, String newTitle) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.changeTitle(account, newTitle);
     }
 
     public void removeStudy(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithManagersByPath(path);
         study.checkedManager(account);
         this.studyRepository.delete(study);
     }
 
     public Study joinStudy(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithMembersByPath(path);
         study.joinMember(account);
         return study;
     }
 
     public Study leaveStudy(Account account, String path) {
-        Study study = this.findByPath(path);
+        Study study = this.findStudyWithMembersByPath(path);
         study.leaveMember(account);
         return study;
     }

@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
         @NamedAttributeNode("tags"), @NamedAttributeNode("managers")})
 @NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
         @NamedAttributeNode("zones"), @NamedAttributeNode("managers")})
-@NamedEntityGraph(name = "Study.noRelations", attributeNodes = {})
+@NamedEntityGraph(name = "Study.withManagers", attributeNodes = {@NamedAttributeNode("managers")})
+@NamedEntityGraph(name = "Study.withMembers", attributeNodes = {@NamedAttributeNode("members")})
 public class Study {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
