@@ -61,7 +61,7 @@ public class StudyController {
     public String viewStudyMembers(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
         model.addAttribute("study", this.studyService.findByPath(path));
-        return "study/view";
+        return "study/members";
     }
 
     @GetMapping("/study/{path}/join")
