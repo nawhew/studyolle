@@ -107,8 +107,6 @@ public class StudySettingController {
      * 배너 이미지를 변경합니다.
      * @param account
      * @param path
-     * @param errors
-     * @param model
      * @param attributes
      * @return
      */
@@ -124,8 +122,6 @@ public class StudySettingController {
      * 스터디에서 배너를 사용하도록 변경합니다.
      * @param account
      * @param path
-     * @param errors
-     * @param model
      * @param attributes
      * @return
      */
@@ -141,8 +137,6 @@ public class StudySettingController {
      * 스터디에서 배너를 사용하지 않도록 변경합니다.
      * @param account
      * @param path
-     * @param errors
-     * @param model
      * @param attributes
      * @return
      */
