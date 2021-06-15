@@ -205,4 +205,9 @@ public class Study {
             this.recruitingUpdatedDateTime = LocalDateTime.now();
         }
     }
+
+    public void changePath(Account account, String newPath) {
+        this.checkedManager(account);
+        this.path = newPath;
+    }
 }

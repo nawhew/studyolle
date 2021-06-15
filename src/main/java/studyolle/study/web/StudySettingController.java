@@ -263,7 +263,14 @@ public class StudySettingController {
         return "redirect:/study/" + path + "/settings/study";
     }
 
-    // TODO /settings/study/path
+    @PostMapping("/study/path")
+    public String changeStudyPath(@CurrentUserAccount Account account, @PathVariable String path
+            , @RequestParam String newPath, RedirectAttributes attributes) {
+        this.studyService.changeStudyPath(account, path, newPath);
+        attributes.addFlashAttribute("message", "스터디 경로를 변경하였습니다.");
+        return "redirect:/study/" + newPath + "/settings/study";
+    }
+
     // TODO /settings/study/title
     // TODO /settings/study/remove
 

@@ -102,4 +102,12 @@ public class StudyService {
         Study study = this.findByPath(path);
         study.stopRecruit(account);
     }
+
+    public void changeStudyPath(Account account, String path, String newPath) {
+        Study study = this.findByPath(path);
+
+        if(!this.studyRepository.existsByPath(newPath)) {
+            study.changePath(account, newPath);
+        }
+    }
 }
