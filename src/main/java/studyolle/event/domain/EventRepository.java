@@ -6,10 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import studyolle.study.domain.Study;
 
 import java.util.List;
+import java.util.Optional;
 
-@Transactional(readOnly = true)
+@Transactional
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    @Transactional(readOnly = true)
     @EntityGraph(value = "Event.withEnrollments", type = EntityGraph.EntityGraphType.LOAD)
     List<Event> findWithEnrollmentsByStudyOrderByStartDateTime(Study study);
+
+    @EntityGraph(value = "Event.withEnrollments", type = EntityGraph.EntityGraphType.LOAD)
+    Optional<Event> findWithEnrollmentsById(Long id);
 }

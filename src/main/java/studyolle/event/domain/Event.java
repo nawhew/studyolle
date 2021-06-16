@@ -4,6 +4,7 @@ import lombok.*;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.enrollment.domain.Enrollment;
+import studyolle.event.dto.EventForm;
 import studyolle.study.domain.Study;
 
 import javax.persistence.*;
@@ -135,4 +136,16 @@ public class Event {
         return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
 
+    /**
+     * 모임 수정 폼의 내용을 받아 모임을 수정합니다
+     * 모임의 타입은 수정 할 수 없다.
+     * @param eventForm
+     */
+    public void updateByForm(EventForm eventForm) {
+        this.title = eventForm.getTitle();
+        this.limitOfEnrollments = eventForm.getLimitOfEnrollments();
+        this.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+        this.startDateTime = eventForm.getStartDateTime();
+        this.endDateTime = eventForm.getEndDateTime();
+    }
 }

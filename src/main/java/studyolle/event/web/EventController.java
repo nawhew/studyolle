@@ -134,4 +134,36 @@ public class EventController {
         model.addAttribute("newEvents", newEvents);
         model.addAttribute("oldEvents", oldEvents);
     }
+
+    @GetMapping("/study/{path}/events/{id}/edit")
+    public String updateEventForm(@CurrentUserAccount Account account, @PathVariable String path
+            , @PathVariable Long id, Model model) {
+        model.addAttribute("account", account);
+
+        Study study = this.studyService.findByPath(path);
+        study.checkedManager(account);
+        model.addAttribute("study", study);
+
+        Event event = this.eventService.findById(id);
+        model.addAttribute("event", event);
+        model.addAttribute("eventForm", EventForm.of(event));
+        return "event/update-form";
+    }
+
+    @PostMapping("/study/{path}/events/{id}/edit")
+    public String updateEvent(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id
+            , @Valid EventForm eventForm, Errors errors, Model model) {
+        Study study = this.studyService.findByPath(path);
+        study.checkedManager(account);
+        Event event = this.eventService.updateEvent(id, eventForm);
+
+        if(errors.hasErrors()) {
+            model.addAttribute("account", account);
+            model.addAttribute("study", study);
+            model.addAttribute("event", event);
+            return "event/update-form";
+        }
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + id;
+    }
 }
