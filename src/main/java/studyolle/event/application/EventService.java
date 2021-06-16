@@ -21,4 +21,10 @@ public class EventService {
         event.init(study, account);
         this.eventRepository.save(event);
     }
+
+    @Transactional(readOnly = true)
+    public Event findById(Long id) {
+        return this.eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 모임이 없습니다."));
+    }
 }

@@ -76,4 +76,13 @@ public class EventController {
         this.eventService.createEvent(study, account, eventForm);
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
+
+    @GetMapping("/study/{path}/events/{id}")
+    public String eventsView(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id
+            , Model model) {
+        model.addAttribute("account", account);
+        model.addAttribute("study", this.studyService.findByPath(path));
+        model.addAttribute("event", this.eventService.findById(id));
+        return "event/view";
+    }
 }
