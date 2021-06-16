@@ -81,6 +81,14 @@ public class EventController {
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
+    /**
+     * 모임 상세 화면 요청 처리
+     * @param account
+     * @param path
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/study/{path}/events/{id}")
     public String eventsView(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id
             , Model model) {
@@ -90,6 +98,13 @@ public class EventController {
         return "event/view";
     }
 
+    /**
+     * 스터디의 모임들을 모두 보여주는 화면 요청 처리
+     * @param account
+     * @param path
+     * @param model
+     * @return
+     */
     @GetMapping("/study/{path}/events")
     public String eventsView(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute("account", account);
@@ -99,6 +114,11 @@ public class EventController {
         return "study/events";
     }
 
+    /**
+     * Model attribute에 신규모임들과 지난모임들 추가
+     * @param model
+     * @param study
+     */
     private void addAttributeNewEventsAndOldEventsByStudy(Model model, Study study) {
         List<Event> newEvents = new ArrayList<>();
         List<Event> oldEvents = new ArrayList<>();
