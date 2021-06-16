@@ -34,7 +34,6 @@ public class EventForm {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDateTime;
 
-    @Min(2)
     private String description;
 
     public Event toEntity() {
