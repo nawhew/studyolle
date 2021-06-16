@@ -9,6 +9,8 @@ import studyolle.event.domain.EventRepository;
 import studyolle.event.dto.EventForm;
 import studyolle.study.domain.Study;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,5 +28,10 @@ public class EventService {
     public Event findById(Long id) {
         return this.eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 모임이 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> findWithEnrollmentsByStudy(Study study) {
+        return this.eventRepository.findWithEnrollmentsByStudyOrderByStartDateTime(study);
     }
 }

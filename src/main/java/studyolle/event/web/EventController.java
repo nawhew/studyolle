@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.event.application.EventService;
+import studyolle.event.domain.Event;
 import studyolle.event.dto.EventForm;
 import studyolle.event.dto.EventFormValidator;
 import studyolle.study.application.StudyService;
@@ -20,6 +21,9 @@ import studyolle.study.domain.Study;
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -84,5 +88,30 @@ public class EventController {
         model.addAttribute("study", this.studyService.findByPath(path));
         model.addAttribute("event", this.eventService.findById(id));
         return "event/view";
+    }
+
+    @GetMapping("/study/{path}/events")
+    public String eventsView(@CurrentUserAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute("account", account);
+        Study study = this.studyService.findByPath(path);
+        model.addAttribute("study", study);
+        this.addAttributeNewEventsAndOldEventsByStudy(model, study);
+        return "study/events";
+    }
+
+    private void addAttributeNewEventsAndOldEventsByStudy(Model model, Study study) {
+        List<Event> newEvents = new ArrayList<>();
+        List<Event> oldEvents = new ArrayList<>();
+
+        this.eventService.findWithEnrollmentsByStudy(study).stream()
+            .forEach(event -> {
+                if(event.getEndDateTime().isBefore(LocalDateTime.now())) {
+                    oldEvents.add(event);
+                } else {
+                    newEvents.add(event);
+                }
+            });
+        model.addAttribute("newEvents", newEvents);
+        model.addAttribute("oldEvents", oldEvents);
     }
 }

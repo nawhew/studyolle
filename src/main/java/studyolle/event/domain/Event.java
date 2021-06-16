@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "events")
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @NoArgsConstructor @AllArgsConstructor
+@NamedEntityGraph(name = "Event.withEnrollments",attributeNodes = @NamedAttributeNode("enrollments"))
 public class Event {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -125,4 +126,13 @@ public class Event {
         }
         return false;
     }
+
+    /**
+     * 참가 신청을 할 수 있는 남은 자리의 수를 반환합니다.
+     * @return
+     */
+    public int numberOfRemainSpots() {
+        return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
+    }
+
 }
