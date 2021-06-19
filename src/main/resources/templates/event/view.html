@@ -180,12 +180,12 @@
                        th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}" >
                         모임 수정
                     </a> <br/>
-                    <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#cancel">
-                        모임 취소
-                    </button>
+                    <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}" th:method="delete">
+                        <button class="btn btn-outline-danger btn-sm" type="submit" aria-describedby="submitHelp">모임 취소</button>
+                    </form>
                 </dd>
             </dl>
-            <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
+            <!--<div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -207,7 +207,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
         <div th:replace="fragments.html :: footer"></div>
     </div>
