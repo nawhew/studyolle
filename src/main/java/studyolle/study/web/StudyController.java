@@ -34,6 +34,7 @@ public class StudyController {
     @GetMapping("/new-study")
     public String newStudyForm(@CurrentUserAccount Account account, Model model) {
         model.addAttribute("account", account);
+        model.addAttribute("study", new Study());
         model.addAttribute("studyForm", new StudyForm());
         return "study/form";
     }

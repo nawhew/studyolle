@@ -64,4 +64,10 @@ public class EventService {
     private boolean canChangeLimitOfEnrollments(EventForm eventForm, Event event) {
         return event.getEnrollments().size() <= eventForm.getLimitOfEnrollments();
     }
+
+    public void deleteEvent(Long id) {
+        Event event = this.eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 모임이 없습니다."));
+        this.eventRepository.delete(event);
+    }
 }

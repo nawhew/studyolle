@@ -5,10 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
 import studyolle.event.application.EventService;
@@ -165,5 +162,20 @@ public class EventController {
         }
 
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + id;
+    }
+
+    /**
+     * 해당 모임을 취소합니다. (DB에서 삭제됨)
+     * @param account
+     * @param path
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/study/{path}/events/{id}")
+    public String cancelEvent(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = this.studyService.findStudyWithManagersByPath(path);
+        study.checkedManager(account);
+        this.eventService.deleteEvent(id);
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events";
     }
 }
