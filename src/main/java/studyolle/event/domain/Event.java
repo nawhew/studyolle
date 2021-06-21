@@ -148,4 +148,28 @@ public class Event {
         this.startDateTime = eventForm.getStartDateTime();
         this.endDateTime = eventForm.getEndDateTime();
     }
+
+    /**
+     * 승인 할 수 있는 상태의 참석요청인지 확인
+     * @param enrollment
+     * @return
+     */
+    public boolean canAccept(Enrollment enrollment) {
+        return this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && !enrollment.isAttended()
+                && !enrollment.isAccepted();
+    }
+
+    /**
+     * 거부 할 수 있는 상태의 참석요청인지 확인
+     * @param enrollment 
+     * @return
+     */
+    public boolean canReject(Enrollment enrollment) {
+        return this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && !enrollment.isAttended()
+                && enrollment.isAccepted();
+    }
 }
