@@ -17,15 +17,9 @@
             </div>
             <div class="col-4 text-right justify-content-end">
                 <span sec:authorize="isAuthenticated()">
-
-                    <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enroll'}" method="post">
-                        <button th:if="${event.isEnrollableFor(#authentication.principal)}"
-                                class="btn btn-primary" type="submit" aria-describedby="submitHelp">
-                            <i class="fa fa-plus-circle"></i>참가신청</button>
-                    </form>
                     <button th:if="${event.isEnrollableFor(#authentication.principal)}"
                             class="btn btn-outline-primary" data-toggle="modal" data-target="#enroll">
-                        <i class="fa fa-plus-circle"></i> 참가 신청!
+                        <i class="fa fa-plus-circle"></i> 참가 신청
                     </button>
                     <button th:if="${event.isDisenrollableFor(#authentication.principal)}"
                             class="btn btn-outline-primary" data-toggle="modal" data-target="#disenroll">
@@ -186,12 +180,12 @@
                        th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}" >
                         모임 수정
                     </a> <br/>
-                    <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}" th:method="delete">
-                        <button class="btn btn-outline-danger btn-sm" type="submit" aria-describedby="submitHelp">모임 취소</button>
-                    </form>
+                    <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#cancel">
+                        모임 취소
+                    </button>
                 </dd>
             </dl>
-            <!--<div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
+            <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -213,7 +207,7 @@
                         </div>
                     </div>
                 </div>
-            </div>-->
+            </div>
         </div>
         <div th:replace="fragments.html :: footer"></div>
     </div>
