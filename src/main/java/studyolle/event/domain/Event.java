@@ -52,6 +52,7 @@ public class Event {
     private Integer limitOfEnrollments;
 
     @OneToMany(mappedBy = "event")
+    @OrderBy("enrolledAt")
     private final List<Enrollment> enrollments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
