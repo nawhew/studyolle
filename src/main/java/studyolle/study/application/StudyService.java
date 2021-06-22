@@ -143,4 +143,13 @@ public class StudyService {
         study.leaveMember(account);
         return study;
     }
+
+    public Study findByPathCheckedMember(String path, Account account) {
+        Study study = this.studyRepository.findStudyWithManagersAndMembersByPath(path)
+                .orElseThrow(() -> new IllegalArgumentException(path + ": 해당 경로의 스터디가 없습니다."));
+        if(!study.isManager(account) && study.isMember(account)) {
+            throw new IllegalArgumentException("해당 스터디의 회원이아닙니다.");
+        }
+        return study;
+    }
 }

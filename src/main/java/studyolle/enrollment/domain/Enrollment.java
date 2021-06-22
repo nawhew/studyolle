@@ -1,8 +1,6 @@
 package studyolle.enrollment.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import studyolle.account.domain.Account;
 import studyolle.event.domain.Event;
 
@@ -14,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class Enrollment {
 
     @Id @GeneratedValue

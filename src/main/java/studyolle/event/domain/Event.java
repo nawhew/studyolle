@@ -172,4 +172,19 @@ public class Event {
                 && !enrollment.isAttended()
                 && enrollment.isAccepted();
     }
+
+    public void addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
+        enrollment.setEvent(this);
+    }
+
+    /**
+     * 즉시 수락해야하는 참석요청인 경우 true(수락)을 반환합니다.
+     * 모임타입이 선착순(FCFS)이며, 남은 자리가 1자리 이상 있어야 합니다.
+     * @return
+     */
+    public boolean isImmediatelyAcceptEnrollment() {
+        return this.eventType == EventType.FCFS
+                && this.numberOfRemainSpots() > 0;
+    }
 }

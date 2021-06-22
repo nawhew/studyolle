@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
+import studyolle.enrollment.domain.Enrollment;
+import studyolle.enrollment.domain.EnrollmentRepository;
 import studyolle.event.domain.Event;
 import studyolle.event.domain.EventRepository;
 import studyolle.event.dto.EventForm;
 import studyolle.study.domain.Study;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +20,7 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     public void createEvent(Study study, Account account, EventForm eventForm) {
         Event event = eventForm.toEntity();
@@ -69,5 +73,40 @@ public class EventService {
         Event event = this.eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 모임이 없습니다."));
         this.eventRepository.delete(event);
+    }
+
+    /**
+     * 새로운 등록을 모임에 추가합니다.
+     * @param account
+     * @param id
+     */
+    public void addNewEnrollment(Account account, Long id) {
+        Event event = this.findWithEnrollmentsById(id);
+        Enrollment enrollment = this.createEnrollment(event, account);
+        event.addEnrollment(enrollment);
+
+    }
+
+    /**
+     * 새로운 등록을 생성합니다.
+     * 요청한 모임과 계정 정보로 이미 생성된 등록이 있는지 중복체크 합니다.
+     * 중복되는 등록이 있는경우 오류를 발생합니다.
+     * 받은 계정정보와 현재시간을 등록시간으로 초기화 하며,
+     * 모임의 종류에 따라 승인여부를 초기화해줍니다. (선착순 모임이며 남은 자리가 있는 경우 바로 승인)
+     * @param event
+     * @param account
+     * @return
+     */
+    private Enrollment createEnrollment(Event event, Account account) {
+        if(this.enrollmentRepository.existsByEventAndAccount(event, account)) {
+            throw new IllegalArgumentException("이미 모임에 등록되어 있습니다.");
+        }
+
+        Enrollment enrollment = Enrollment.builder()
+                .account(account)
+                .accepted(event.isImmediatelyAcceptEnrollment())
+                .enrolledAt(LocalDateTime.now())
+                .build();
+        return this.enrollmentRepository.save(enrollment);
     }
 }
