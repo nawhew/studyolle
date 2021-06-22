@@ -196,10 +196,10 @@ public class Event {
     }
 
     /**
-     * 선착순 모임의 경우 등록취소로 인한 다음 대기자가 생긴 경우
-     * 자동으로 허가를 해줍니다.
+     * 선착순 모임의 경우 등록취소/모집인원 증가 등으로 인해 발생한 추가 모집 인원을
+     * 대기자가 있는 경우 자동으로 허가를 해줍니다.
      */
-    public void acceptNextEnrollment() {
+    public void acceptWaitingEnrollment() {
         if(this.isImmediatelyAcceptEnrollment()) {
             AtomicInteger count = new AtomicInteger(this.numberOfRemainSpots());
             List<Enrollment> enrollments = this.enrollments.stream().sorted((o1, o2) -> o1.getEnrolledAt().compareTo(o2.getEnrolledAt()))

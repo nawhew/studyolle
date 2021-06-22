@@ -13,7 +13,6 @@ import studyolle.study.domain.Study;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -53,8 +52,9 @@ public class EventService {
      */
     public Event updateEvent(Long id, EventForm eventForm) {
         Event event = this.findWithEnrollmentsById(id);
-        if(canChangeLimitOfEnrollments(eventForm, event)) {
+        if(this.canChangeLimitOfEnrollments(eventForm, event)) {
             event.updateByForm(eventForm);
+            event.acceptWaitingEnrollment();
         }
         return event;
     }
@@ -113,7 +113,7 @@ public class EventService {
 
     public void cancelEnrollment(Account account, Long id) {
         Event event = this.deleteEnrollment(account, id);
-        event.acceptNextEnrollment();
+        event.acceptWaitingEnrollment();
     }
 
     /**
