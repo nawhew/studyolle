@@ -33,4 +33,8 @@ public class Enrollment {
     public void accept() {
         this.accepted = true;
     }
+
+    public void reject() {
+        this.accepted = false;
+    }
 }

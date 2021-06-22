@@ -151,4 +151,9 @@ public class StudyService {
             throw new IllegalArgumentException("해당 스터디의 회원이아닙니다.");
         }
     }
+
+    public void checkedManager(String path, Account account) {
+        Study study = this.findStudyWithManagersByPath(path);
+        study.checkedManager(account);
+    }
 }

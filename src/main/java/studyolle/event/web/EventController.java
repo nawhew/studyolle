@@ -8,6 +8,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
+import studyolle.enrollment.domain.Enrollment;
 import studyolle.event.application.EventService;
 import studyolle.event.domain.Event;
 import studyolle.event.dto.EventForm;
@@ -195,4 +196,24 @@ public class EventController {
 
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + id;
     }
+
+
+    @GetMapping("/study/{path}/events/{eventId}/enrollments/{enrollmentId}/accept")
+    public String acceptEnrollment(@CurrentUserAccount Account account, @PathVariable String path
+            , @PathVariable Long eventId, @PathVariable Long enrollmentId) {
+        this.studyService.checkedManager(path, account);
+        this.eventService.acceptEnrollment(eventId, enrollmentId);
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + eventId;
+    }
+
+    @GetMapping("/study/{path}/events/{eventId}/enrollments/{enrollmentId}/reject")
+    public String rejectEnrollment(@CurrentUserAccount Account account, @PathVariable String path
+            , @PathVariable Long eventId, @PathVariable Long enrollmentId) {
+        this.studyService.checkedManager(path, account);
+        this.eventService.rejectEnrollment(eventId, enrollmentId);
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + eventId;
+    }
+
 }

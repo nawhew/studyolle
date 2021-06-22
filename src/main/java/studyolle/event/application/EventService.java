@@ -129,4 +129,36 @@ public class EventService {
         this.enrollmentRepository.delete(enrollment);
         return event;
     }
+
+    /**
+     * 해당 등록의 참석을 승인합니다.
+     * @param eventId
+     * @param enrollmentId
+     */
+    public void acceptEnrollment(Long eventId, Long enrollmentId) {
+        Event event = this.findWithEnrollmentsById(eventId);
+        Enrollment persistEnrollment = event.getEnrollments().stream()
+                .filter(enrollment -> enrollment.getId().equals(enrollmentId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("모임에 등록되어 있지 않습니다."));
+        if(!event.canAccept(persistEnrollment)) {
+            throw new IllegalArgumentException("승인 할 수 없는 등록정보 입니다.");
+        }
+        persistEnrollment.accept();
+    }
+
+    /**
+     * 해당 등록의 참석을 거부(취소)합니다.
+     * @param eventId
+     * @param enrollmentId
+     */
+    public void rejectEnrollment(Long eventId, Long enrollmentId) {
+        Event event = this.findWithEnrollmentsById(eventId);
+        Enrollment persistEnrollment = event.getEnrollments().stream()
+                .filter(enrollment -> enrollment.getId().equals(enrollmentId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("모임에 등록되어 있지 않습니다."));
+        if(!event.canReject(persistEnrollment)) {
+            throw new IllegalArgumentException("취소 할 수 없는 등록정보 입니다.");
+        }
+        persistEnrollment.reject();
+    }
 }
