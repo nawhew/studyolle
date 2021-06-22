@@ -153,12 +153,32 @@ public class EventService {
      */
     public void rejectEnrollment(Long eventId, Long enrollmentId) {
         Event event = this.findWithEnrollmentsById(eventId);
-        Enrollment persistEnrollment = event.getEnrollments().stream()
-                .filter(enrollment -> enrollment.getId().equals(enrollmentId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("모임에 등록되어 있지 않습니다."));
-        if(!event.canReject(persistEnrollment)) {
+        Enrollment enrollment = event.findEnrollment(enrollmentId);
+        if(!event.canReject(enrollment)) {
             throw new IllegalArgumentException("취소 할 수 없는 등록정보 입니다.");
         }
-        persistEnrollment.reject();
+        enrollment.reject();
+    }
+
+    /**
+     * 출석체크합니다.
+     * @param eventId
+     * @param enrollmentId
+     */
+    public void checkInEnrollment(Long eventId, Long enrollmentId) {
+        Event event = this.findWithEnrollmentsById(eventId);
+        Enrollment enrollment = event.findEnrollment(enrollmentId);
+        enrollment.checkIn();
+    }
+
+    /**
+     * 출석체크를 취소 합니다.
+     * @param eventId
+     * @param enrollmentId
+     */
+    public void cancelCheckInEnrollment(Long eventId, Long enrollmentId) {
+        Event event = this.findWithEnrollmentsById(eventId);
+        Enrollment enrollment = event.findEnrollment(enrollmentId);
+        enrollment.cancelCheckIn();
     }
 }

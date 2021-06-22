@@ -216,4 +216,21 @@ public class EventController {
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + eventId;
     }
 
+    @GetMapping("/study/{path}/events/{eventId}/enrollments/{enrollmentId}/checkin")
+    public String checkInEnrollment(@CurrentUserAccount Account account, @PathVariable String path
+            , @PathVariable Long eventId, @PathVariable Long enrollmentId) {
+        this.studyService.checkedManager(path, account);
+        this.eventService.checkInEnrollment(eventId, enrollmentId);
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + eventId;
+    }
+
+    @GetMapping("/study/{path}/events/{eventId}/enrollments/{enrollmentId}/cancel-checkin")
+    public String cancelCheckInEnrollment(@CurrentUserAccount Account account, @PathVariable String path
+            , @PathVariable Long eventId, @PathVariable Long enrollmentId) {
+        this.studyService.checkedManager(path, account);
+        this.eventService.cancelCheckInEnrollment(eventId, enrollmentId);
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + eventId;
+    }
 }

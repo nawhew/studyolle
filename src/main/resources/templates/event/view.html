@@ -124,6 +124,7 @@
                                        th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/accept'}" >신청 수락</a>
                                     <a th:if="${event.canReject(enroll)}" href="#" class="text-decoration-none"
                                        th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/reject'}">취소</a>
+                                    <span th:if="${!event.canAccept(enroll) && !event.canReject(enroll)}">참석완료</span>
                                 </td>
                                 <td th:if="${study.isManager(#authentication.principal)}">
                                     <a th:if="${enroll.accepted && !enroll.attended}" href="#" class="text-decoration-none"

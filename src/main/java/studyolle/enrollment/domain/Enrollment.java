@@ -37,4 +37,20 @@ public class Enrollment {
     public void reject() {
         this.accepted = false;
     }
+
+    public void checkIn() {
+        if(this.isAccepted() && !this.isAttended()) {
+            this.attended = true;
+            return;
+        }
+        throw new IllegalArgumentException("출석 체크 할 수 없는 등록정보 입니다.");
+    }
+
+    public void cancelCheckIn() {
+        if(this.isAccepted() && this.isAttended()) {
+            this.attended = false;
+            return;
+        }
+        throw new IllegalArgumentException("출석 취소 할 수 없는 등록정보 입니다.");
+    }
 }

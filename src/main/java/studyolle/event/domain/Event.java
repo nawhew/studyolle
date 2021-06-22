@@ -86,7 +86,7 @@ public class Event {
      * @return
      */
     public boolean isDisenrollableFor(UserAccount userAccount) {
-        return isNotClosed() && isAlreadyEnrolled(userAccount);
+        return isNotClosed() && isAlreadyEnrolled(userAccount) && !isAttended(userAccount);
     }
 
     /**
@@ -99,8 +99,7 @@ public class Event {
     }
 
     /**
-     * 참가 신청을 한 상태인지 여부 반환.
-     * 매니저의 승인이 필요한 경우 아직 참가 확정이 안된 계정도 true 반환.
+     * 모임에 참석까지 하였는지 여부 확인
      * @param userAccount 
      * @return
      */
@@ -228,5 +227,16 @@ public class Event {
                         }
                     });
         }
+    }
+
+    /**
+     * 등록 ID로 모임에 포함 된 등록을 찾아 반환합니다.
+     * @param enrollmentId
+     * @return
+     */
+    public Enrollment findEnrollment(Long enrollmentId) {
+        return this.enrollments.stream()
+                .filter(enrollment -> enrollment.getId().equals(enrollmentId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("모임에 등록되어 있지 않습니다."));
     }
 }
