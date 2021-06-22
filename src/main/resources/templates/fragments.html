@@ -159,7 +159,7 @@
 
 
 <div th:fragment="study-banner" th:if="${study.useBanner}" class="row" id="study-logo">
-    <img th:src="${study.image}"/>
+    <img class="mb-2" th:src="${study.image}" style="width: 100%; height:auto;"/>
 </div>
 
 <div th:fragment="study-info">
