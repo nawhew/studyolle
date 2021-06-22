@@ -181,9 +181,17 @@ public class EventController {
 
     @PostMapping("/study/{path}/events/{id}/enroll")
     public String enrollEvent(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id) {
-        // TODO 스터디에 가입된 계정인지 확인합니다 (매니저 혹은 맴버)
-        Study study = this.studyService.findByPathCheckedMember(path, account);
+        this.studyService.checkedMember(path, account);
         this.eventService.addNewEnrollment(account, id);
+
+        return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + id;
+    }
+
+
+    @PostMapping("/study/{path}/events/{id}/leave")
+    public String cancelEnrollEvent(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        this.studyService.checkedMember(path, account);
+        this.eventService.cancelEnrollment(account, id);
 
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events/" + id;
     }

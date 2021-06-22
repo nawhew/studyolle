@@ -30,4 +30,7 @@ public class Enrollment {
 
     private boolean attended;
 
+    public void accept() {
+        this.accepted = true;
+    }
 }

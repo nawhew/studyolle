@@ -13,6 +13,7 @@ import studyolle.study.domain.Study;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -108,5 +109,24 @@ public class EventService {
                 .enrolledAt(LocalDateTime.now())
                 .build();
         return this.enrollmentRepository.save(enrollment);
+    }
+
+    public void cancelEnrollment(Account account, Long id) {
+        Event event = this.deleteEnrollment(account, id);
+        event.acceptNextEnrollment();
+    }
+
+    /**
+     * 모임의 등록을 취소합니다.
+     * @param account
+     * @param id
+     */
+    private Event deleteEnrollment(Account account, Long id) {
+        Event event = this.findWithEnrollmentsById(id);
+        Enrollment enrollment = this.enrollmentRepository.findByEventAndAccount(event, account)
+                .orElseThrow(() -> new IllegalArgumentException("모임에 등록되어 있지 않습니다."));
+        event.deleteEnrollment(enrollment);
+        this.enrollmentRepository.delete(enrollment);
+        return event;
     }
 }

@@ -11,6 +11,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "events")
@@ -178,6 +180,11 @@ public class Event {
         enrollment.setEvent(this);
     }
 
+    public void deleteEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
+        enrollment.setEvent(null);
+    }
+
     /**
      * 즉시 수락해야하는 참석요청인 경우 true(수락)을 반환합니다.
      * 모임타입이 선착순(FCFS)이며, 남은 자리가 1자리 이상 있어야 합니다.
@@ -186,5 +193,39 @@ public class Event {
     public boolean isImmediatelyAcceptEnrollment() {
         return this.eventType == EventType.FCFS
                 && this.numberOfRemainSpots() > 0;
+    }
+
+    /**
+     * 선착순 모임의 경우 등록취소로 인한 다음 대기자가 생긴 경우
+     * 자동으로 허가를 해줍니다.
+     */
+    public void acceptNextEnrollment() {
+        if(this.isImmediatelyAcceptEnrollment()) {
+            AtomicInteger count = new AtomicInteger(this.numberOfRemainSpots());
+            List<Enrollment> enrollments = this.enrollments.stream().sorted((o1, o2) -> o1.getEnrolledAt().compareTo(o2.getEnrolledAt()))
+                    .filter(enrollment -> !enrollment.isAccepted())
+                    .collect(Collectors.toList());
+            for(Enrollment enrollment : enrollments) {
+                enrollment.accept();
+            }
+        }
+    }
+
+    /**
+     * 추후 테스트용 메소드
+     * 스트림에서 도메인의 값을 변경하면 Transaction의 범위에 안들어 가는 것인가?
+     */
+    @Deprecated
+    public void acceptNextEnrollmentUseStream() {
+        if(this.isImmediatelyAcceptEnrollment()) {
+            AtomicInteger count = new AtomicInteger(this.numberOfRemainSpots());
+            this.enrollments.stream().sorted((o1, o2) -> o1.getEnrolledAt().compareTo(o2.getEnrolledAt()))
+                    .filter(enrollment -> !enrollment.isAccepted())
+                    .forEach(enrollment -> {
+                        if(count.decrementAndGet() > 0) {
+                            enrollment.accept();
+                        }
+                    });
+        }
     }
 }
