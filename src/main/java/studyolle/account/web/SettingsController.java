@@ -1,4 +1,4 @@
-package studyolle.settings.web;
+package studyolle.account.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.security.CurrentUserAccount;
-import studyolle.settings.dto.*;
+import studyolle.account.dto.*;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.application.ZoneService;

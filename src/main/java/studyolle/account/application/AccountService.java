@@ -15,9 +15,9 @@ import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
 import studyolle.account.dto.SignUpForm;
-import studyolle.settings.dto.NicknameForm;
-import studyolle.settings.dto.Notifications;
-import studyolle.settings.dto.Profile;
+import studyolle.account.dto.NicknameForm;
+import studyolle.account.dto.Notifications;
+import studyolle.account.dto.Profile;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 

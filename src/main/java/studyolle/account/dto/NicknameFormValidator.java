@@ -1,4 +1,4 @@
-package studyolle.settings.dto;
+package studyolle.account.dto;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

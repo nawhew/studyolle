@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import studyolle.settings.dto.ZoneForm;
+import studyolle.account.dto.ZoneForm;
 import studyolle.zone.domain.Zone;
 import studyolle.zone.domain.ZoneRepository;
 

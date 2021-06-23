@@ -1,4 +1,4 @@
-package studyolle.settings.web;
+package studyolle.account.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import studyolle.WithAccount;
 import studyolle.account.application.AccountService;
 import studyolle.account.domain.Account;
-import studyolle.settings.dto.TagForm;
-import studyolle.settings.dto.ZoneForm;
+import studyolle.account.dto.TagForm;
+import studyolle.account.dto.ZoneForm;
+import studyolle.account.web.SettingsController;
 import studyolle.tag.application.TagService;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.application.ZoneService;
@@ -26,7 +27,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static studyolle.account.web.account.AccountControllerTestSupport.회원가입_요청;
 
 @SpringBootTest
 @AutoConfigureMockMvc

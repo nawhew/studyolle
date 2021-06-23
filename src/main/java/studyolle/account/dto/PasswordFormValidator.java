@@ -1,10 +1,7 @@
-package studyolle.settings.dto;
+package studyolle.account.dto;
 
-import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import studyolle.account.domain.AccountRepository;
-import studyolle.account.dto.SignUpForm;
 
 public class PasswordFormValidator implements Validator {
 

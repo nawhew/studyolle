@@ -1,4 +1,4 @@
-package studyolle.settings.dto;
+package studyolle.account.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

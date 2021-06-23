@@ -1,4 +1,4 @@
-package studyolle.settings.dto;
+package studyolle.account.dto;
 
 import lombok.*;
 import studyolle.zone.domain.Zone;

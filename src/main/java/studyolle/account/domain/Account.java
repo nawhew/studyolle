@@ -2,8 +2,8 @@ package studyolle.account.domain;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import studyolle.settings.dto.Notifications;
-import studyolle.settings.dto.Profile;
+import studyolle.account.dto.Notifications;
+import studyolle.account.dto.Profile;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 
