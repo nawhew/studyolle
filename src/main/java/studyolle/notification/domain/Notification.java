@@ -2,6 +2,7 @@ package studyolle.notification.domain;
 
 import lombok.*;
 import studyolle.account.domain.Account;
+import studyolle.study.domain.Study;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class Notification {
 
     private String message;
 
-    private String checked;
+    private boolean checked;
 
     @ManyToOne
     private Account account;
@@ -29,4 +30,16 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
+
+    public static Notification create(Study study, Account account) {
+        return Notification.builder()
+                .title(study.getTitle())
+                .link("/study/" + study.getPath())
+                .checked(false)
+                .createdLocalDateTime(LocalDateTime.now())
+                .message(study.getShortDescription())
+                .account(account)
+                .notificationType(NotificationType.STUDY_CREATED)
+                .build();
+    }
 }

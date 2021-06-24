@@ -97,7 +97,7 @@ public class StudyService {
     }
 
     public void publish(Account account, String path) {
-        Study study = this.findStudyWithManagersByPath(path);
+        Study study = this.findByPath(path);
         study.publish(account);
         this.eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
