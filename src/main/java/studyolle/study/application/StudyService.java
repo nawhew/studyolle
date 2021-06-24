@@ -32,7 +32,6 @@ public class StudyService {
      */
     public Study createStudy(Account account, StudyForm studyForm) {
         Study persistStudy = this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
-        this.eventPublisher.publishEvent(new StudyCreatedEvent(persistStudy));
         return persistStudy;
     }
 
@@ -100,6 +99,7 @@ public class StudyService {
     public void publish(Account account, String path) {
         Study study = this.findStudyWithManagersByPath(path);
         study.publish(account);
+        this.eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
 
     public void close(Account account, String path) {
