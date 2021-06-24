@@ -1,6 +1,7 @@
 package studyolle.study.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class StudyService {
 
     private final StudyRepository studyRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 입력받은 폼으로 새로운 스터디를 개설합니다.
@@ -29,7 +31,9 @@ public class StudyService {
      * @param studyForm
      */
     public Study createStudy(Account account, StudyForm studyForm) {
-        return this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
+        Study persistStudy = this.studyRepository.save(studyForm.toEntity().addCreateMember(account));
+        this.eventPublisher.publishEvent(new StudyCreatedEvent(persistStudy));
+        return persistStudy;
     }
 
     public Study findByPath(String path) {
