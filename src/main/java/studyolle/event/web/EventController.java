@@ -153,7 +153,7 @@ public class EventController {
             , @Valid EventForm eventForm, Errors errors, Model model) {
         Study study = this.studyService.findByPath(path);
         study.checkedManager(account);
-        Event event = this.eventService.updateEvent(id, eventForm);
+        Event event = this.eventService.updateEvent(id, eventForm, study);
 
         if(errors.hasErrors()) {
             model.addAttribute("account", account);
@@ -176,7 +176,7 @@ public class EventController {
     public String cancelEvent(@CurrentUserAccount Account account, @PathVariable String path, @PathVariable Long id) {
         Study study = this.studyService.findStudyWithManagersByPath(path);
         study.checkedManager(account);
-        this.eventService.deleteEvent(id);
+        this.eventService.deleteEvent(id, study);
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8) + "/events";
     }
 

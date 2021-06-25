@@ -1,6 +1,7 @@
 package studyolle.event.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
@@ -9,6 +10,7 @@ import studyolle.enrollment.domain.EnrollmentRepository;
 import studyolle.event.domain.Event;
 import studyolle.event.domain.EventRepository;
 import studyolle.event.dto.EventForm;
+import studyolle.study.application.StudyUpdatedEvent;
 import studyolle.study.domain.Study;
 
 import java.time.LocalDateTime;
@@ -21,11 +23,14 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void createEvent(Study study, Account account, EventForm eventForm) {
         Event event = eventForm.toEntity();
         event.init(study, account);
         this.eventRepository.save(event);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study
+                , "새로운 모임(" + event.getTitle() + ")이 추가되었습니다."));
     }
 
     @Transactional(readOnly = true)
@@ -48,14 +53,17 @@ public class EventService {
      * 입력받은 폼으로 모임의 값을 수정합니다.
      * @param id
      * @param eventForm
+     * @param study
      * @return
      */
-    public Event updateEvent(Long id, EventForm eventForm) {
+    public Event updateEvent(Long id, EventForm eventForm, Study study) {
         Event event = this.findWithEnrollmentsById(id);
         if(this.canChangeLimitOfEnrollments(eventForm, event)) {
             event.updateByForm(eventForm);
             event.acceptWaitingEnrollment();
         }
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study
+                , event.getTitle() + "모임 내용이 수정되었습니다."));
         return event;
     }
 
@@ -70,10 +78,12 @@ public class EventService {
         return event.getEnrollments().size() <= eventForm.getLimitOfEnrollments();
     }
 
-    public void deleteEvent(Long id) {
+    public void deleteEvent(Long id, Study study) {
         Event event = this.eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 모임이 없습니다."));
         this.eventRepository.delete(event);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study
+                , event.getTitle() + " 모임이 삭제되었습니다."));
     }
 
     /**
