@@ -63,6 +63,7 @@ public class StudyService {
     public Study updateStudyDescription(Account account, String path, StudyDescriptionForm studyDescriptionForm) {
         Study study = this.findByPath(path);
         study.updateDescription(account, studyDescriptionForm);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디 소개가 수정되었습니다."));
         return study;
     }
 
@@ -105,16 +106,21 @@ public class StudyService {
     public void close(Account account, String path) {
         Study study = this.findStudyWithManagersByPath(path);
         study.close(account);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디가 종료되었습니다."));
     }
 
     public void startRecruit(Account account, String path) {
         Study study = this.findStudyWithManagersByPath(path);
         study.startRecruit(account);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study
+                , "스터디에서 팀원 모집이 시작되었습니다."));
     }
 
     public void stopRecruit(Account account, String path) {
         Study study = this.findStudyWithManagersByPath(path);
         study.stopRecruit(account);
+        this.eventPublisher.publishEvent(new StudyUpdatedEvent(study
+                , "스터디에서 팀원 모집이 중단되었습니다."));
     }
 
     public void changeStudyPath(Account account, String path, String newPath) {

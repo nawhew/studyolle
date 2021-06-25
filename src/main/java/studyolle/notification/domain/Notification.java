@@ -31,15 +31,15 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
-    public static Notification create(Study study, Account account) {
+    public static Notification create(Study study, Account account, String message, NotificationType notificationType) {
         return Notification.builder()
                 .title(study.getTitle())
                 .link("/study/" + study.getPath())
                 .checked(false)
                 .createdDateTime(LocalDateTime.now())
-                .message(study.getShortDescription())
+                .message(message)
                 .account(account)
-                .notificationType(NotificationType.STUDY_CREATED)
+                .notificationType(notificationType)
                 .build();
     }
 

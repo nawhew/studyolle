@@ -13,8 +13,13 @@ import studyolle.notification.domain.Notification;
 import studyolle.notification.domain.NotificationRepository;
 import studyolle.notification.domain.NotificationType;
 import studyolle.study.domain.Study;
+import studyolle.study.domain.StudyRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @Async
@@ -33,7 +38,26 @@ public class StudyEventListener {
                 .findAll(AccountPredicates.findByTagsAndZones(study.getTags(), study.getZones()))
                 .forEach(account -> {
                     if(account.isStudyCreatedByWeb()) {
-                        this.notificationRepository.save(Notification.create(study, account));
+                        this.notificationRepository.save(Notification.create(study, account, study.getShortDescription()
+                                , NotificationType.STUDY_CREATED));
+                    }
+
+                    if(account.isStudyCreatedByEmail()) {
+                        // TODO 이메일 시스템 구축 후 이메일 알림 전송 추가
+                    }
+                });
+    }
+
+    @EventListener
+    public void handleStudyUpdatedEvent(StudyUpdatedEvent studyUpdatedEvent) {
+        Study study = studyUpdatedEvent.getStudy();
+        String message = studyUpdatedEvent.getMessage();
+
+        study.getMembers().stream()
+                .forEach(account -> {
+                    if(account.isStudyCreatedByWeb()) {
+                        this.notificationRepository.save(Notification.create(study, account, message
+                                , NotificationType.STUDY_UPDATED));
                     }
 
                     if(account.isStudyCreatedByEmail()) {
