@@ -26,7 +26,7 @@ public class Notification {
     @ManyToOne
     private Account account;
 
-    private LocalDateTime createdLocalDateTime;
+    private LocalDateTime createdDateTime;
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
@@ -36,10 +36,14 @@ public class Notification {
                 .title(study.getTitle())
                 .link("/study/" + study.getPath())
                 .checked(false)
-                .createdLocalDateTime(LocalDateTime.now())
+                .createdDateTime(LocalDateTime.now())
                 .message(study.getShortDescription())
                 .account(account)
                 .notificationType(NotificationType.STUDY_CREATED)
                 .build();
+    }
+
+    public void checkAsRead() {
+        this.checked = true;
     }
 }
