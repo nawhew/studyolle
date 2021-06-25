@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
+import studyolle.enrollment.application.EnrollmentEvent;
 import studyolle.enrollment.domain.Enrollment;
 import studyolle.enrollment.domain.EnrollmentRepository;
 import studyolle.event.domain.Event;
@@ -154,6 +155,8 @@ public class EventService {
             throw new IllegalArgumentException("승인 할 수 없는 등록정보 입니다.");
         }
         persistEnrollment.accept();
+        this.eventPublisher.publishEvent(new EnrollmentEvent(persistEnrollment
+                , event.getTitle() + " 모임에 참가 승인되었습니다."));
     }
 
     /**
@@ -168,6 +171,8 @@ public class EventService {
             throw new IllegalArgumentException("취소 할 수 없는 등록정보 입니다.");
         }
         enrollment.reject();
+        this.eventPublisher.publishEvent(new EnrollmentEvent(enrollment
+                , event.getTitle() + " 모임에 참가 거부되었습니다."));
     }
 
     /**
