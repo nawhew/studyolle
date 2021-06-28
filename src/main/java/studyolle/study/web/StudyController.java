@@ -78,4 +78,11 @@ public class StudyController {
         model.addAttribute("study", this.studyService.leaveStudy(account, path));
         return "redirect:/study/" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
+
+    @GetMapping("/search/study")
+    public String searchStudy(Model model, String keyword) {
+        model.addAttribute("studyList", this.studyService.searchStudy(keyword));
+        model.addAttribute("keyword", keyword);
+        return "search";
+    }
 }

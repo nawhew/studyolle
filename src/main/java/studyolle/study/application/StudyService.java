@@ -13,6 +13,7 @@ import studyolle.study.dto.StudyForm;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -165,5 +166,9 @@ public class StudyService {
     public void checkedManager(String path, Account account) {
         Study study = this.findStudyWithManagersByPath(path);
         study.checkedManager(account);
+    }
+
+    public List<Study> searchStudy(String keyword) {
+        return this.studyRepository.findByKeyword(keyword);
     }
 }
