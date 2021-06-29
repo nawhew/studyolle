@@ -2,6 +2,8 @@ package studyolle.study.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
@@ -168,7 +170,7 @@ public class StudyService {
         study.checkedManager(account);
     }
 
-    public List<Study> searchStudy(String keyword) {
-        return this.studyRepository.findByKeyword(keyword);
+    public Page<Study> searchStudy(String keyword, Pageable pageable) {
+        return this.studyRepository.findByKeyword(keyword, pageable);
     }
 }

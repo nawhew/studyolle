@@ -1,6 +1,9 @@
 package studyolle.study.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -80,8 +83,10 @@ public class StudyController {
     }
 
     @GetMapping("/search/study")
-    public String searchStudy(Model model, String keyword) {
-        model.addAttribute("studyList", this.studyService.searchStudy(keyword));
+    public String searchStudy(Model model, String keyword
+        , @PageableDefault(size = 9, page = 0, sort = "publishedDateTime", direction = Sort.Direction.DESC)
+                          Pageable pageable) {
+        model.addAttribute("studyPage", this.studyService.searchStudy(keyword, pageable));
         model.addAttribute("keyword", keyword);
         return "search";
     }
