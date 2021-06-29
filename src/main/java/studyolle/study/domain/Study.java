@@ -70,6 +70,8 @@ public class Study {
 
     private boolean useBanner;
 
+    private int memberCount;
+
     /**
      * 배너 이미지를 반환합니다. (없는 경우 기본 이미지를 반환합니다)
      * @return 
@@ -225,6 +227,7 @@ public class Study {
 
     public void joinMember(Account account) {
         this.members.add(account);
+        this.memberCount++;
     }
 
     public void leaveMember(Account account) {
@@ -232,5 +235,6 @@ public class Study {
             this.managers.remove(account);
         }
         this.members.remove(account);
+        this.memberCount--;
     }
 }
