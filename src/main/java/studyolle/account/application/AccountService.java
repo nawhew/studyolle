@@ -1,5 +1,6 @@
 package studyolle.account.application;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import studyolle.account.domain.Account;
 import studyolle.account.domain.AccountRepository;
 import studyolle.account.domain.security.UserAccount;
@@ -18,6 +21,9 @@ import studyolle.account.dto.SignUpForm;
 import studyolle.account.dto.NicknameForm;
 import studyolle.account.dto.Notifications;
 import studyolle.account.dto.Profile;
+import studyolle.common.email.EmailMessage;
+import studyolle.common.email.EmailService;
+import studyolle.config.AppProperties;
 import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 
@@ -27,20 +33,16 @@ import java.util.Set;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
 
-    private final JavaMailSender javaMailSender;
+    private final EmailService emailService;
+    private final TemplateEngine templateEngine;
+    private final AppProperties appProperties;
 
     private final PasswordEncoder passwordEncoder;
-
-    public AccountService(AccountRepository accountRepository, JavaMailSender javaMailSender
-            , PasswordEncoder passwordEncoder) {
-        this.accountRepository = accountRepository;
-        this.javaMailSender = javaMailSender;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /**
      * 유저 정보 저장
@@ -56,13 +58,24 @@ public class AccountService implements UserDetailsService {
      * @param account 
      */
     public void sendSignUpCheckEmail(Account account) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(account.getEmail());
-        mailMessage.setSubject("스터디올레 - 회원 가입 인증");
-        mailMessage.setText("/check-email-token?token=" + account.generateEmailCheckToken()
-                                    + "&email=" + account.getEmail());
         this.accountRepository.save(account);
-        this.javaMailSender.send(mailMessage);
+
+        Context context = new Context();
+        context.setVariable("link", "/check-email-token?token=" + account.generateEmailCheckToken() +
+                "&email=" + account.getEmail());
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("linkName", "이메일 인증하기");
+        context.setVariable("message", "스터디올래 서비스를 사용하려면 링크를 클릭하세요.");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(account.getEmail())
+                .subject("스터디올래, 회원 가입 인증")
+                .message(message)
+                .build();
+
+        emailService.sendEmail(emailMessage);
     }
 
     /**
