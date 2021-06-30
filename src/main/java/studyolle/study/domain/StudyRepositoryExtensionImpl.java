@@ -48,8 +48,8 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
         QStudy study = QStudy.study;
         JPQLQuery<Study> query = from(study)
                 .where(study.published.isTrue()
-                        .or(study.tags.any().in(tags))
-                        .or(study.zones.any().in(zones))
+                        .and(study.tags.any().in(tags))
+                        .and(study.zones.any().in(zones))
                 ).distinct();
 
         return query.fetch();
