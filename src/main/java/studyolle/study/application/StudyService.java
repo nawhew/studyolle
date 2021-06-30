@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
-import studyolle.account.domain.AccountRepository;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
 import studyolle.study.dto.StudyDescriptionForm;
@@ -16,8 +15,6 @@ import studyolle.tag.domain.Tag;
 import studyolle.zone.domain.Zone;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -172,5 +169,10 @@ public class StudyService {
 
     public Page<Study> searchStudy(String keyword, Pageable pageable) {
         return this.studyRepository.findByKeyword(keyword, pageable);
+    }
+
+    public List<Study> findTop9ByOrderPublishedDateTime() {
+        return this.studyRepository
+                .findTop9ByPublishedAndClosedOrderByPublishedDateTimeDesc(true, false);
     }
 }

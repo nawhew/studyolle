@@ -1,9 +1,12 @@
 package studyolle.study.domain;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -27,4 +30,6 @@ public interface StudyRepository extends JpaRepository<Study, Long>, StudyReposi
 
     @EntityGraph(value = "Study.withManagersAndMembers", type = EntityGraph.EntityGraphType.LOAD)
     Optional<Study> findStudyWithManagersAndMembersByPath(String path);
+
+    List<Study> findTop9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);
 }
