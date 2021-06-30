@@ -1,5 +1,6 @@
 package studyolle.account.domain;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,4 +17,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>, Queryds
     Optional<Account> findByEmail(String email);
 
     Optional<Account> findByNickname(String nickname);
+
+    @EntityGraph(attributePaths = {"tags", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Account> findWithTagsAndZonesById(Long id);
 }

@@ -176,4 +176,9 @@ public class AccountService implements UserDetailsService {
         this.accountRepository.findById(account.getId())
                 .ifPresent(account1 -> account1.removeZone(zone));
     }
+
+    public Account findWithTagsAndZonesById(Account account) {
+        return this.accountRepository.findWithTagsAndZonesById(account.getId())
+                .orElseThrow(IllegalAccessError::new);
+    }
 }

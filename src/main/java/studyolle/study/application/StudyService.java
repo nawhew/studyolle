@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import studyolle.account.domain.Account;
+import studyolle.account.domain.AccountRepository;
 import studyolle.study.domain.Study;
 import studyolle.study.domain.StudyRepository;
 import studyolle.study.dto.StudyDescriptionForm;
@@ -23,6 +24,7 @@ public class StudyService {
 
     private final StudyRepository studyRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AccountRepository accountRepository;
 
     /**
      * 입력받은 폼으로 새로운 스터디를 개설합니다.
@@ -246,5 +248,27 @@ public class StudyService {
     public List<Study> findTop9ByOrderPublishedDateTime() {
         return this.studyRepository
                 .findTop9ByPublishedAndClosedOrderByPublishedDateTimeDesc(true, false);
+    }
+
+
+    /**
+     * 로그인 된 계정의 관심 분야와 활동 지역을 가지고 있는 스터디를 조회합니다.
+     * @param account
+     * @return
+     */
+    public List<Study> findByZonesAndTagsForAccount(Account account) {
+        Account persistAccount = this.accountRepository.findWithTagsAndZonesById(account.getId())
+                .orElseThrow(IllegalAccessError::new);
+        return this.studyRepository.findByTagsAndZones(persistAccount.getTags(), persistAccount.getZones());
+    }
+
+    public List<Study> findManagedStudy(Account account) {
+        return this.studyRepository
+                .findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(account, false);
+    }
+
+    public List<Study> findJoinedStudy(Account account) {
+        return this.studyRepository
+                .findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(account, false);
     }
 }

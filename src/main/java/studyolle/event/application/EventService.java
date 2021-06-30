@@ -196,4 +196,14 @@ public class EventService {
         Enrollment enrollment = event.findEnrollment(enrollmentId);
         enrollment.cancelCheckIn();
     }
+
+    /**
+     * 참석 할 모임을 찾습니다.
+     * @param account
+     * @return
+     */
+    public List<Enrollment> findAcceptedEnrollmentsByAccount(Account account) {
+        return this.enrollmentRepository
+                .findWithEventByAccountAndAcceptedAndAttended(account, true, false);
+    }
 }
